@@ -89,7 +89,7 @@ let titleImage = (
 //<i className="fas fa-fire" />
 if (window.location.hostname.indexOf("localhost") >= 0 || window.location.hostname.indexOf("10.0.0.107") >= 0) {
   XDAI_PROVIDER = "wss://testnet-node1.leapdao.org:1443";
-  WEB3_PROVIDER = "wss://rinkeby.infura.io/ws/v3/f039330d8fb747e48a7ce98f51400d65";
+  WEB3_PROVIDER = "https://rinkeby.infura.io/v3/f039330d8fb747e48a7ce98f51400d65"
   CLAIM_RELAY = false;
   ERC20NAME = false;
   ERC20TOKEN = false;
@@ -1342,6 +1342,7 @@ render() {
 
           switch(view) {
             case 'main':
+            console.log(this.state.ethBalance, this.state.ethprice)
             return (
               <div>
                 <div className="main-card card w-100" style={{zIndex:1}}>
@@ -1880,7 +1881,9 @@ render() {
         }}
         //used to pass a private key into Dapparatus
         newPrivateKey={this.state.newPrivateKey}
-        fallbackWeb3Provider={XDAI_PROVIDER}
+        fallbackWeb3Provider={WEB3_PROVIDER}
+        network="LeapTestnet"
+        leapProvider={XDAI_PROVIDER}
         onUpdate={async (state) => {
           //console.log("DAPPARATUS UPDATE",state)
           if(ERC20TOKEN){
