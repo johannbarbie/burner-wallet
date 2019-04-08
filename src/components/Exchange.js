@@ -593,25 +593,53 @@ export default class Exchange extends React.Component {
       }else{
         //send funds using metamask (or other injected web3 ... should be checked and on mainnet)
         console.log("Depositing to ",toDaiBridgeAccount)
+        let bridgeContract = new this.props.web3.eth.Contract(this.props.bridgeContract._jsonInterface,this.props.bridgeContract._address)
+        console.log("CURRENT BRIDGE CONTRACT YOU NEED TO GET ABI FROM:",this.props.bridgeContract, this.state.daiAddress)
+        let daiContract = new this.props.web3.eth.Contract(this.props.daiContract._jsonInterface,this.props.daiContract._address)
+        console.log("CURRENT BRIDGE CONTRACT YOU NEED TO GET ABI FROM:",this.props.bridgeContract, this.state.daiAddress)
 
         this.setState({
           loaderBarColor:"#f5eb4a",
           loaderBarStatusText:message,
         })
 
-        let bridgeContract = new this.props.web3.eth.Contract(this.props.bridgeContract._jsonInterface,this.props.bridgeContract._address)
-        console.log("CURRENT BRIDGE CONTRACT YOU NEED TO GET ABI FROM:",this.props.bridgeContract, this.state.daiAddress)
-        this.props.tx(bridgeContract.methods.deposit(
-          this.state.daiAddress,
-          this.state.mainnetweb3.utils.toWei(""+amount,"ether"),
-          1
+        // NOTE: This function promisifies this.props.tx
+        const tx = async (...args) => {
+          console.log(args)
+          return new Promise(resolve => {
+            this.props.tx(...args, receipt => {
+                resolve(receipt)
+            })
+          })
+        }
+        console.log("daiContract", this.props.daiContract)
+        const approveReceipt = await tx(
+          daiContract.methods.approve(
+            bridgeContract._address,
+            // TODO: Change this to a calculation
+            "57896044618658097711785492504343953926634992332820282019728792003956564819968" // 2^255
+          ),
           ///TODO LET ME PASS IN A CERTAIN AMOUNT OF GAS INSTEAD OF LEANING BACK ON THE <GAS> COMPONENT!!!!!
-        ),150000,0,0,(receipt)=>{
-          if(receipt){
-            console.log("SESSION WITHDRAWN:",receipt)
-            cb(receipt)
-          }
-        })
+          150000,
+          0,
+          0
+        )
+
+        const depositReceipt = await tx(
+          bridgeContract.methods.deposit(
+            this.state.daiAddress,
+            this.state.mainnetweb3.utils.toWei(""+amount,"ether"),
+            0
+          ),
+          ///TODO LET ME PASS IN A CERTAIN AMOUNT OF GAS INSTEAD OF LEANING BACK ON THE <GAS> COMPONENT!!!!!
+          150000,
+          0,
+          0
+        )
+        if (depositReceipt) {
+          console.log("SESSION WITHDRAWN:",depositReceipt)
+          cb(depositReceipt)
+        }
       }
     } else {
       console.log("ERRORed RESPONSE FROM ethgasstation",response)
