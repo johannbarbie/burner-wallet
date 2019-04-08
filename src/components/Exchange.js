@@ -504,118 +504,118 @@ export default class Exchange extends React.Component {
   canSendDai() {
     return (this.state.daiSendToAddress && this.state.daiSendToAddress.length === 42 && parseFloat(this.state.daiSendAmount)>0 && parseFloat(this.state.daiSendAmount) <= parseFloat(this.props.daiBalance))
   }
-  transferDai(destination,amount,message,cb) {
-    axios.get("https://ethgasstation.info/json/ethgasAPI.json", { crossdomain: true })
-    .catch((err)=>{
+  // TODO: Make this whole approve situation optional and only when LeapNetwork is used
+  async transferDai(destination,amount,message,cb) {
+    let response
+    try {
+      response = await axios.get("https://ethgasstation.info/json/ethgasAPI.json", { crossdomain: true })
+    } catch(err) {
       console.log("Error getting gas price",err)
-    })
-    .then((response)=>{
-      if(response && response.data.average>0&&response.data.average<200){
+    }
+
+    if(response && response.data.average>0&&response.data.average<200){
+
+      this.setState({
+        loaderBarColor:"#f5eb4a",
+        loaderBarStatusText:message,
+      })
+      response.data.average=response.data.average + (response.data.average*GASBOOSTPRICE)
+      let gwei = Math.round(response.data.average*100)/1000
+
+      if(this.state.mainnetMetaAccount){
+        //send funds using metaaccount on mainnet
+
+        // First, we approve the token we'd like to transfer to the plasma
+        // chain, then we call deposit on the bridge
+        let paramsObject = {
+          from: this.state.daiAddress,
+          value: 0,
+          // TODO: Calculate gas estimate appropriately
+          gas: 100000,
+          gasPrice: Math.round(gwei * 1000000000)
+        }
+        console.log("====================== >>>>>>>>> paramsObject!!!!!!!",paramsObject)
+
+        // TODO: Skip approve step if already approved.
+        paramsObject.to = this.props.daiContract._address
+        paramsObject.data = this.props.daiContract.methods.approve(
+          this.props.bridgeContract._address,
+          // TODO: Change this to a calculation
+          "57896044618658097711785492504343953926634992332820282019728792003956564819968" // 2^255
+        ).encodeABI()
+
+        const signedApprove = await this.state.mainnetweb3.eth.accounts.signTransaction(paramsObject, this.state.mainnetMetaAccount.privateKey)
+        console.log("========= >>> SIGNED",signedApprove)
+        let receiptApprove
+        try {
+          // Here we send the approve transaction to the network
+          receiptApprove = await this.state.mainnetweb3.eth.sendSignedTransaction(signedApprove.rawTransaction)
+        } catch(err) {
+          console.log("EEEERRRRRRRROOOOORRRRR ======== >>>>>",err)
+          this.props.changeAlert({type: 'danger',message: err.toString()});
+        }
+        console.log("META RECEIPT Approve",receiptApprove)
+        if(receiptApprove&&receiptApprove.transactionHash&&!metaReceiptTracker[receiptApprove.transactionHash]){
+          metaReceiptTracker[receiptApprove.transactionHash] = true
+        }
+
+        paramsObject = {
+          from: this.state.daiAddress,
+          value: 0,
+          // TODO: I guess this should be calculated by web3's gas
+          // estimate?
+          gas: 200000,
+          gasPrice: Math.round(gwei * 1000000000)
+        }
+        paramsObject.to = this.props.bridgeContract._address
+        paramsObject.data = this.props.bridgeContract.methods.deposit(
+          this.state.daiAddress,
+          this.state.mainnetweb3.utils.toWei(""+amount,"ether"),
+          0
+        ).encodeABI()
+        console.log("====================== >>>>>>>>> paramsObject!!!!!!!",paramsObject)
+
+        const signedDeposit = await this.state.mainnetweb3.eth.accounts.signTransaction(paramsObject, this.state.mainnetMetaAccount.privateKey)
+        console.log("========= >>> SIGNED",signedDeposit)
+
+        let receiptDeposit
+        try {
+          receiptDeposit = await this.state.mainnetweb3.eth.sendSignedTransaction(signedDeposit.rawTransaction)
+        } catch(err) {
+          console.log("EEEERRRRRRRROOOOORRRRR ======== >>>>>",err)
+          this.props.changeAlert({type: 'danger',message: err.toString()});
+        }
+        if(receiptDeposit&&receiptDeposit.transactionHash&&!metaReceiptTracker[receiptDeposit.transactionHash]){
+          metaReceiptTracker[receiptDeposit.transactionHash] = true
+          console.log("receipt", receiptDeposit)
+          cb(receiptDeposit)
+        }
+      }else{
+        //send funds using metamask (or other injected web3 ... should be checked and on mainnet)
+        console.log("Depositing to ",toDaiBridgeAccount)
 
         this.setState({
           loaderBarColor:"#f5eb4a",
           loaderBarStatusText:message,
         })
 
-        response.data.average=response.data.average + (response.data.average*GASBOOSTPRICE)
-        let gwei = Math.round(response.data.average*100)/1000
-        if(this.state.mainnetMetaAccount){
-          //send funds using metaaccount on mainnet
-
-          // First, we approve the token we'd like to transfer to the plasma
-          // chain, then we call deposit on the bridge
-          let paramsObject = {
-            from: this.state.daiAddress,
-            value: 0,
-            gas: 100000,
-            gasPrice: Math.round(gwei * 1000000000)
+        let bridgeContract = new this.props.web3.eth.Contract(this.props.bridgeContract._jsonInterface,this.props.bridgeContract._address)
+        console.log("CURRENT BRIDGE CONTRACT YOU NEED TO GET ABI FROM:",this.props.bridgeContract, this.state.daiAddress)
+        this.props.tx(bridgeContract.methods.deposit(
+          this.state.daiAddress,
+          this.state.mainnetweb3.utils.toWei(""+amount,"ether"),
+          1
+          ///TODO LET ME PASS IN A CERTAIN AMOUNT OF GAS INSTEAD OF LEANING BACK ON THE <GAS> COMPONENT!!!!!
+        ),150000,0,0,(receipt)=>{
+          if(receipt){
+            console.log("SESSION WITHDRAWN:",receipt)
+            cb(receipt)
           }
-          console.log("====================== >>>>>>>>> paramsObject!!!!!!!",paramsObject)
-
-          // TODO: Skip approve step if already approved.
-          paramsObject.to = this.props.daiContract._address
-          paramsObject.data = this.props.daiContract.methods.approve(
-            this.props.bridgeContract._address,
-            "57896044618658097711785492504343953926634992332820282019728792003956564819968" // 2^255
-          ).encodeABI()
-
-          this.state.mainnetweb3.eth.accounts.signTransaction(paramsObject, this.state.mainnetMetaAccount.privateKey).then(signed => {
-            console.log("========= >>> SIGNED",signed)
-              this.state.mainnetweb3.eth.sendSignedTransaction(signed.rawTransaction).on('receipt', (receipt)=>{
-                console.log("META RECEIPT",receipt)
-                if(receipt&&receipt.transactionHash&&!metaReceiptTracker[receipt.transactionHash]){
-                  metaReceiptTracker[receipt.transactionHash] = true
-                  // NOTE: For the approve we do not already call the call back
-                  // of this function. The outer function depends on cb to
-                  // contain a receipt of the bridge. Hence, we call back
-                  // after we successfully sent the second transaction (bridge.deposit).
-                  // cb(receipt)
-                  paramsObject = {
-                    from: this.state.daiAddress,
-                    value: 0,
-                    // TODO: I guess this should be calculated by web3's gas
-                    // estimate?
-                    gas: 200000,
-                    gasPrice: Math.round(gwei * 1000000000)
-                  }
-                  console.log("====================== >>>>>>>>> paramsObject!!!!!!!",paramsObject)
-
-                  paramsObject.to = this.props.bridgeContract._address
-                  paramsObject.data = this.props.bridgeContract.methods.deposit(
-                    this.state.daiAddress,
-                    this.state.mainnetweb3.utils.toWei(""+amount,"ether"),
-                    0
-                  ).encodeABI()
-
-                  console.log("TTTTTTTTTTTTTTTTTTTTTX",paramsObject)
-
-                  this.state.mainnetweb3.eth.accounts.signTransaction(paramsObject, this.state.mainnetMetaAccount.privateKey).then(signed => {
-                    console.log("========= >>> SIGNED",signed)
-                      this.state.mainnetweb3.eth.sendSignedTransaction(signed.rawTransaction).on('receipt', (receipt)=>{
-                        console.log("META RECEIPT deposit",receipt)
-                        if(receipt&&receipt.transactionHash&&!metaReceiptTracker[receipt.transactionHash]){
-                          metaReceiptTracker[receipt.transactionHash] = true
-                          console.log(cb)
-                          cb(receipt)
-                        }
-                      }).on('error', (err)=>{
-                        console.log("EEEERRRRRRRROOOOORRRRR ======== >>>>>",err)
-                        this.props.changeAlert({type: 'danger',message: err.toString()});
-                      }).then(console.log)
-                  });
-                        }
-                      }).on('error', (err)=>{
-                        console.log("EEEERRRRRRRROOOOORRRRR ======== >>>>>",err)
-                        this.props.changeAlert({type: 'danger',message: err.toString()});
-                      }).then(console.log)
-                  });
-        }else{
-          //send funds using metamask (or other injected web3 ... should be checked and on mainnet)
-          console.log("Depositing to ",toDaiBridgeAccount)
-
-          this.setState({
-            loaderBarColor:"#f5eb4a",
-            loaderBarStatusText:message,
-          })
-
-          let bridgeContract = new this.props.web3.eth.Contract(this.props.bridgeContract._jsonInterface,this.props.bridgeContract._address)
-          console.log("CURRENT BRIDGE CONTRACT YOU NEED TO GET ABI FROM:",this.props.bridgeContract, this.state.daiAddress)
-          this.props.tx(bridgeContract.methods.deposit(
-            this.state.daiAddress,
-            this.state.mainnetweb3.utils.toWei(""+amount,"ether"),
-            1
-            ///TODO LET ME PASS IN A CERTAIN AMOUNT OF GAS INSTEAD OF LEANING BACK ON THE <GAS> COMPONENT!!!!!
-          ),150000,0,0,(receipt)=>{
-            if(receipt){
-              console.log("SESSION WITHDRAWN:",receipt)
-              cb(receipt)
-            }
-          })
-        }
-      }else{
-        console.log("ERRORed RESPONSE FROM ethgasstation",response)
+        })
       }
-    })
+    } else {
+      console.log("ERRORed RESPONSE FROM ethgasstation",response)
+    }
   }
   sendXdai(){
     if(parseFloat(this.props.xdaiBalance)<parseFloat(this.state.xdaiSendAmount)){
