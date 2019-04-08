@@ -505,7 +505,6 @@ export default class Exchange extends React.Component {
   canSendDai() {
     return (this.state.daiSendToAddress && this.state.daiSendToAddress.length === 42 && parseFloat(this.state.daiSendAmount)>0 && parseFloat(this.state.daiSendAmount) <= parseFloat(this.props.daiBalance))
   }
-  // TODO: Make this whole approve situation optional and only when LeapNetwork is used
   async transferDai(destination,amount,message,cb) {
     // Inspired by: https://github.com/leapdao/bridge-ui/blob/427f72944c31a62f687f3b53a35c4115765efada/src/stores/token.ts#L281
     const approveAmount = new BN("2").pow(new BN("255"));
@@ -526,48 +525,51 @@ export default class Exchange extends React.Component {
         //send funds using metaaccount on mainnet
         const amountWei = this.state.mainnetweb3.utils.toWei(""+amount,"ether")
 
-        const allowance = await this.props.daiContract.methods.allowance(
-          this.state.daiAddress,
-          this.props.bridgeContract._address
-        ).call({from: this.state.daiAddress})
-
         let paramsObject
-        // Only trigger allowance dialogue when amount is more than allowance
-        if (new BN(allowance).lt(amountWei)) {
-          this.setState({
-            loaderBarColor:"#f5eb4a",
-            loaderBarStatusText: "Approving token amount for Plasma bridge"
-          })
-          paramsObject = {
-            from: this.state.daiAddress,
-            value: 0,
-            // TODO: Calculate gas estimate appropriately
-            gas: 100000,
-            gasPrice: Math.round(gwei * 1000000000)
-          }
-          console.log("====================== >>>>>>>>> paramsObject!!!!!!!",paramsObject)
+        if (this.props.network === "LeapTestnet" || this.props.network == "LeapMainnet") {
+          const allowance = await this.props.daiContract.methods.allowance(
+            this.state.daiAddress,
+            this.props.bridgeContract._address
+          ).call({from: this.state.daiAddress})
 
-          paramsObject.to = this.props.daiContract._address
-          paramsObject.data = this.props.daiContract.methods.approve(
-            this.props.bridgeContract._address,
-            approveAmount
-          ).encodeABI()
+          // Only trigger allowance dialogue when amount is more than allowance
+          if (new BN(allowance).lt(new BN(amountWei))) {
+            this.setState({
+              loaderBarColor:"#f5eb4a",
+              loaderBarStatusText: "Approving token amount for Plasma bridge"
+            })
+            paramsObject = {
+              from: this.state.daiAddress,
+              value: 0,
+              // TODO: Calculate gas estimate appropriately
+              gas: 100000,
+              gasPrice: Math.round(gwei * 1000000000)
+            }
+            console.log("====================== >>>>>>>>> paramsObject!!!!!!!",paramsObject)
 
-          const signedApprove = await this.state.mainnetweb3.eth.accounts.signTransaction(paramsObject, this.state.mainnetMetaAccount.privateKey)
-          console.log("========= >>> SIGNED",signedApprove)
-          let receiptApprove
-          try {
-            // Here we send the approve transaction to the network
-            receiptApprove = await this.state.mainnetweb3.eth.sendSignedTransaction(signedApprove.rawTransaction)
-          } catch(err) {
-            console.log("EEEERRRRRRRROOOOORRRRR ======== >>>>>",err)
-            this.props.changeAlert({type: 'danger',message: err.toString()});
-          }
-          console.log("META RECEIPT Approve",receiptApprove)
-          if(receiptApprove&&receiptApprove.transactionHash&&!metaReceiptTracker[receiptApprove.transactionHash]){
-            metaReceiptTracker[receiptApprove.transactionHash] = true
+            paramsObject.to = this.props.daiContract._address
+            paramsObject.data = this.props.daiContract.methods.approve(
+              this.props.bridgeContract._address,
+              approveAmount
+            ).encodeABI()
+
+            const signedApprove = await this.state.mainnetweb3.eth.accounts.signTransaction(paramsObject, this.state.mainnetMetaAccount.privateKey)
+            console.log("========= >>> SIGNED",signedApprove)
+            let receiptApprove
+            try {
+              // Here we send the approve transaction to the network
+              receiptApprove = await this.state.mainnetweb3.eth.sendSignedTransaction(signedApprove.rawTransaction)
+            } catch(err) {
+              console.log("EEEERRRRRRRROOOOORRRRR ======== >>>>>",err)
+              this.props.changeAlert({type: 'danger',message: err.toString()});
+            }
+            console.log("META RECEIPT Approve",receiptApprove)
+            if(receiptApprove&&receiptApprove.transactionHash&&!metaReceiptTracker[receiptApprove.transactionHash]){
+              metaReceiptTracker[receiptApprove.transactionHash] = true
+            }
           }
         }
+
         this.setState({
           loaderBarColor:"#f5eb4a",
           loaderBarStatusText:message,
@@ -623,26 +625,28 @@ export default class Exchange extends React.Component {
           })
         }
 
-        const allowance = await daiContract.methods.allowance(
-          this.state.daiAddress,
-          bridgeContract._address
-        ).call({from: this.state.daiAddress})
+        if (this.props.network === "LeapTestnet" || this.props.network === "LeapMainnet") {
+          const allowance = await daiContract.methods.allowance(
+            this.state.daiAddress,
+            bridgeContract._address
+          ).call({from: this.state.daiAddress})
 
-        if (new BN(allowance).lt(amountWei)) {
-          this.setState({
-            loaderBarColor:"#f5eb4a",
-            loaderBarStatusText: "Approving token amount for Plasma bridge"
-          })
-          const approveReceipt = await tx(
-            daiContract.methods.approve(
-              bridgeContract._address,
-              approveAmount
-            ),
-            ///TODO LET ME PASS IN A CERTAIN AMOUNT OF GAS INSTEAD OF LEANING BACK ON THE <GAS> COMPONENT!!!!!
-            150000,
-            0,
-            0
-          )
+          if (new BN(allowance).lt(new BN(amountWei))) {
+            this.setState({
+              loaderBarColor:"#f5eb4a",
+              loaderBarStatusText: "Approving token amount for Plasma bridge"
+            })
+            const approveReceipt = await tx(
+              daiContract.methods.approve(
+                bridgeContract._address,
+                approveAmount
+              ),
+              ///TODO LET ME PASS IN A CERTAIN AMOUNT OF GAS INSTEAD OF LEANING BACK ON THE <GAS> COMPONENT!!!!!
+              150000,
+              0,
+              0
+            )
+          }
         }
 
         this.setState({
