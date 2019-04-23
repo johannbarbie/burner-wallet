@@ -162,7 +162,8 @@ else if (window.location.hostname.indexOf("sundai.io") >= 0) {
   ERC20TOKEN = false;
   ERC20IMAGE = false;
 }
-else if (window.location.hostname.indexOf("sundai.local") >= 0) {
+else if (window.location.hostname.indexOf("sundai.local") >= 0 ||
+         window.location.hostname.indexOf("sundai.fritz.box") >= 0) {
   XDAI_PROVIDER = "wss://testnet-node1.leapdao.org:1443";
   WEB3_PROVIDER = "wss://rinkeby.infura.io/ws/v3/f039330d8fb747e48a7ce98f51400d65";
   leapNetwork = "Leap Testnet";
