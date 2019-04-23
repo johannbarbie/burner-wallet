@@ -8,6 +8,7 @@ import i18n from '../i18n';
 
 let pollInterval
 let metaReceiptTracker = {}
+const BN = Web3.utils.BN;
 
 export default class SendToAddress extends React.Component {
 
@@ -63,8 +64,8 @@ export default class SendToAddress extends React.Component {
   }
 
   withdraw = async () => {
-    let { fromAddress, amount, metaAccount } = this.state
-    const { tokenSendV2, address, web3, xdaiweb3, pDaiTokenAddr } = this.props
+    let { fromAddress, fromBalance, amount, metaAccount } = this.state
+    const { tokenSendV2, address, web3, xdaiweb3, pDaiTokenAddr} = this.props
 
     if(this.state.canWithdraw){
         console.log("SWITCH TO LOADER VIEW...")
@@ -78,7 +79,7 @@ export default class SendToAddress extends React.Component {
         await tokenSendV2(
           fromAddress,
           address,
-          weiAmount,
+          BN.min(weiAmount, fromBalance),
           color,
           xdaiweb3,
           web3,

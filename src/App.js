@@ -2092,12 +2092,16 @@ async function tokenSend(to, value, gasLimit, txData, cb) {
   value = xdaiweb3.utils.toWei(""+value, "ether")
   const color = await xdaiweb3.getColor(P_DAI_TOKEN_ADDR);
 
-  let receipt;
-  if (metaAccount) {
-    receipt = await tokenSendV2(account, to, value, color, xdaiweb3, web3, metaAccount.privateKey)
-  } else {
-    receipt = await tokenSendV2(account, to, value, color, xdaiweb3, web3, null)
-  }
+  const receipt = await tokenSendV2(
+    account,
+    to,
+    value,
+    color,
+    xdaiweb3,
+    web3,
+    metaAccount && metaAccount.privateKey
+  )
+
   // NOTE: The callback cb is not used correctly in the format 
   // cb(error, receipt) throughout the app. We hence cannot send errors in
   // the callback :(
@@ -2124,16 +2128,7 @@ async function tokenSendV2(from, to, value, color, xdaiweb3, web3, privateKey) {
     transaction = Tx.transferFromUtxos(unspent, from, to, value, color)
   }
 
-  let signedTx;
-  if (!privateKey) {
-    signedTx = await transaction.signWeb3(web3)
-  } else {
-    const privs = [];
-    for(const input of transaction.inputs){
-      privs.push(privateKey);
-    }
-    signedTx = await transaction.sign(privs)
-  }
+  const signedTx = privateKey ? await transaction.signAll(privateKey) : await transaction.signWeb3(web3);
 
   return await xdaiweb3.eth.sendSignedTransaction(signedTx.hex())
 }
