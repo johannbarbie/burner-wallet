@@ -77,7 +77,6 @@ export default class SendToAddress extends React.Component {
         // NOTE: Amount needs to be cast to a string here.
         const weiAmount = web3.utils.toWei(""+amount, "ether")
         const color = await xdaiweb3.getColor(pDaiTokenAddr);
-        console.log("color", color);
 
         await tokenSendV2(
           fromAddress,
