@@ -8,7 +8,6 @@ import i18n from '../i18n';
 
 let pollInterval
 let metaReceiptTracker = {}
-const BN = Web3.utils.BN;
 
 export default class SendToAddress extends React.Component {
 
