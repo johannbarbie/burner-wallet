@@ -44,9 +44,10 @@ export default class SendToAddress extends React.Component {
   }
 
   async poll(){
-    const { xdaiweb3 } = this.props;
+    const { xdaiweb3, pdaiContract } = this.props;
     const { fromAddress } = this.state;
-    let fromBalance = await xdaiweb3.eth.getBalance(fromAddress)
+    //let fromBalance = await xdaiweb3.eth.getBalance(fromAddress)
+    let fromBalance = await pdaiContract.methods.balanceOf(fromAddress).call();
 
     fromBalance = parseFloat(xdaiweb3.utils.fromWei(fromBalance,'ether'))
     fromBalance = fromBalance.toFixed(2)
@@ -64,7 +65,7 @@ export default class SendToAddress extends React.Component {
   }
 
   withdraw = async () => {
-    let { fromAddress, fromBalance, amount, metaAccount } = this.state
+    let { fromAddress, amount, metaAccount } = this.state
     const { tokenSendV2, address, web3, xdaiweb3, pDaiTokenAddr} = this.props
 
     if(this.state.canWithdraw){
@@ -73,13 +74,15 @@ export default class SendToAddress extends React.Component {
         setTimeout(()=>{window.scrollTo(0,0)},60)
         //console.log("metaAccount",this.state.metaAccount,"amount",this.props.web3.utils.toWei(amount,'ether'))
 
-        const weiAmount = web3.utils.toWei(amount, "ether")
+        // NOTE: Amount needs to be cast to a string here.
+        const weiAmount = web3.utils.toWei(""+amount, "ether")
         const color = await xdaiweb3.getColor(pDaiTokenAddr);
+        console.log("color", color);
 
         await tokenSendV2(
           fromAddress,
           address,
-          BN.min(weiAmount, fromBalance),
+          weiAmount,
           color,
           xdaiweb3,
           web3,

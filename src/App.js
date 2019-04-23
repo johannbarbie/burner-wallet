@@ -1498,6 +1498,8 @@ render() {
                       contracts={this.state.contracts}
                       web3={this.state.web3}
                       xdaiweb3={this.state.xdaiweb3}
+                      pdaiContract={this.state.pdaiContract}
+                      pDaiTokenAddr={P_DAI_TOKEN_ADDR}
                       //amount={false}
                       privateKey={this.state.withdrawFromPrivateKey}
                       goBack={this.goBack.bind(this)}
