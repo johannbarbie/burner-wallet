@@ -121,7 +121,30 @@ export default class Exchange extends React.Component {
     }
 
     this.updatePendingExits(daiAddress, xdaiweb3);
-    setInterval(() => this.updatePendingExits(daiAddress, xdaiweb3), 5000);
+
+    this.getWrappedDaiBalance();
+  }
+
+  async getWrappedDaiBalance() {
+    // not a sundai, return immediatelly
+    if (this.state.notSundai) return true;
+
+    const rootPdai = new this.state.mainnetweb3.eth.Contract(
+      require("../contracts/SunDai.abi.js"),
+      this.props.pdaiContract._address
+    );
+
+    try {
+      const daiBalance = await rootPdai.methods.daiBalance(this.state.daiAddress).call();
+      return parseInt(daiBalance);
+    } catch (e) {
+      // no daiBalance function = not a sundai contract, so skipping this check
+      if (e.message.indexOf('Returned values aren\'t valid') >= 0) {
+        this.setState({ notSundai: true });
+        return 0;
+      }
+      throw e;
+    }
   }
 
   async maybeApprovePDai(amountWei) {
@@ -163,7 +186,6 @@ export default class Exchange extends React.Component {
     })
     .then(response => response.json())
     .then(rsp => {
-      console.log(rsp);
       if (rsp.length === 0) {
         this.setState({
           pendingMsg: null
@@ -334,7 +356,12 @@ export default class Exchange extends React.Component {
       this.setState({extraGasUpDisplay})
     }
 
+    this.updatePendingExits(this.state.daiAddress, xdaiweb3)
 
+    if (!this.state.notSundai) {
+      const exitableSunDaiBalance = await this.getWrappedDaiBalance();
+      this.setState({ exitableSunDaiBalance });
+    }
 
     if(this.props.ERC20TOKEN&&dendaiContract){
       let denDaiBalance = await dendaiContract.methods.balanceOf(this.state.daiAddress).call()
@@ -1362,6 +1389,7 @@ export default class Exchange extends React.Component {
     }
 
     let daiToXdaiDisplay =  i18n.t('loading')
+
     //console.log("daiToXdaiMode",daiToXdaiMode)
     if(daiToXdaiMode=="sending" || daiToXdaiMode=="withdrawing" || daiToXdaiMode=="depositing"){
       daiToXdaiDisplay = (
@@ -1621,8 +1649,15 @@ export default class Exchange extends React.Component {
           </div>
 
           <div className="col-6 p-1">
-            <button className="btn btn-large w-100" style={this.props.buttonStyle.primary} disabled={buttonsDisabled}  onClick={()=>{
-              this.setState({daiToXdaiMode:"withdraw"})
+            <button className="btn btn-large w-100" 
+                    style={this.props.buttonStyle.primary} 
+                    disabled={
+                      buttonsDisabled ||
+                      (!this.state.notSundai && this.state.exitableSunDaiBalance === 0) ||
+                      parseFloat(this.props.xdaiBalance) === 0
+                    } 
+                    onClick={()=>{
+                      this.setState({daiToXdaiMode:"withdraw"})
             }} >
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
               <i className="fas fa-arrow-down"  /> sunDAI to DAI
