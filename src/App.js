@@ -1657,6 +1657,7 @@ render() {
                     mainStyle={mainStyle}
                     buttonStyle={buttonStyle}
                     balance={balance}
+                    block={this.state.block}
                     address={account}
                     send={send}
                     goBack={this.goBack.bind(this)}
