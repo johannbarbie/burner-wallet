@@ -2081,7 +2081,6 @@ const isNFT = (color: Number): boolean => color >= NFT_COLOR_BASE;
 
 // NOTE: This function is used heavily by legacy code. We've reimplemented it's
 // body though.
-// NOTE2: Color is currently hard-coded. Use tokenSendV2 to send specific colors.
 async function tokenSend(to, value, gasLimit, txData, cb) {
   let { account, web3, xdaiweb3, metaAccount } = this.state
   if(typeof gasLimit == "function"){
@@ -2095,22 +2094,26 @@ async function tokenSend(to, value, gasLimit, txData, cb) {
   value = xdaiweb3.utils.toWei(""+value, "ether")
   const color = await xdaiweb3.getColor(P_DAI_TOKEN_ADDR);
 
-  const receipt = await tokenSendV2(
-    account,
-    to,
-    value,
-    color,
-    xdaiweb3,
-    web3,
-    metaAccount && metaAccount.privateKey
-  )
+  let receipt;
+  try {
+    receipt = await tokenSendV2(
+      account,
+      to,
+      value,
+      color,
+      xdaiweb3,
+      web3,
+      metaAccount && metaAccount.privateKey
+    )
+  } catch(err) {
+    // NOTE: The callback cb of tokenSend is not used correctly in the expected
+    // format cb(error, receipt) throughout the app. We hence cannot send
+    // errors in the callback :( When no receipt is returned (e.g. null), the
+    // burner wallet will react with not resolving the "sending" view. This is
+    // not ideal and should be changed in the future. We opened a issue on the
+    // upstream repo: https://github.com/austintgriffith/burner-wallet/issues/157
+  }
 
-  // NOTE: The callback cb is not used correctly in the format 
-  // cb(error, receipt) throughout the app. We hence cannot send errors in
-  // the callback :(
-  // TODO: leap-core doesn't return receipts as part of their architecture.
-  // This will have to be addressed as part of this issue:
-  // https://github.com/leapdao/burner-wallet/issues/1
   cb(receipt);
 }
 
@@ -2133,7 +2136,49 @@ async function tokenSendV2(from, to, value, color, xdaiweb3, web3, privateKey) {
 
   const signedTx = privateKey ? await transaction.signAll(privateKey) : await transaction.signWeb3(web3);
 
-  return await xdaiweb3.eth.sendSignedTransaction(signedTx.hex())
+  let receipt;
+  try {
+    receipt = await xdaiweb3.eth.sendSignedTransaction(signedTx.hex())
+  } catch(err) {
+      // NOTE: Leap's node currently doesn't implement the "newBlockHeaders"
+      // JSON-RPC call. When a transaction rejected by a node,
+      // sendSignedTransaction hence throws an error. We simply ignore this
+      // error here and use the polling tactic below. For more details see:
+      // https://github.com/leapdao/leap-node/issues/255
+
+      const messageToIgnore = "Failed to subscribe to new newBlockHeaders to confirm the transaction receipts.";
+      // NOTE: In the case where we want to ignore web3's error message, there's
+      // "\r\n {}" included in the error message, which is why we cannot
+      // compare with the equal operator, but have to use String.includes.
+      if (!err.message.includes(messageToIgnore)) {
+        throw err;
+      }
+  }
+
+  // NOTE: Leapdao's Plasma implementation currently doesn't return receipts.
+  // We hence have to periodically query the leap node to check whether our
+  // transaction has been included into the chain. We assume that if it hasn't
+  // been included after 5000ms (50 rounds at a 100ms timeout), it failed.
+  // Unfortunately, at this point we cannot provide an error message for why
+  // the transaction wasn't included as the leap node doesn't provide one.
+  let rounds = 50;
+  let txIncluded = false;
+  while (rounds--) {
+      const res = await xdaiweb3.eth.getTransaction(signedTx.hash())
+
+      if (res && res.blockHash) {
+          txIncluded = true;
+          break;
+      } else {
+        setTimeout(null, 100);
+      }
+  }
+
+  if (txIncluded) {
+    return receipt;
+  } else {
+    throw new Error("Transaction wasn't included into a block.");
+  }
 }
 
 let sortByBlockNumberDESC = (a,b)=>{
