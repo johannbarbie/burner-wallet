@@ -2093,7 +2093,6 @@ async function tokenSend(to, value, gasLimit, txData, cb) {
 
   value = xdaiweb3.utils.toWei(""+value, "ether")
   const color = await xdaiweb3.getColor(P_DAI_TOKEN_ADDR);
-  console.log({ account, to, value, color });
   try {
     const receipt = await tokenSendV2(
       account,
