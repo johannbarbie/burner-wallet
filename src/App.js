@@ -2141,7 +2141,7 @@ async function tokenSendV2(from, to, value, color, xdaiweb3, web3, privateKey) {
     receipt = await xdaiweb3.eth.sendSignedTransaction(signedTx.hex())
   } catch(err) {
       // NOTE: Leap's node currently doesn't implement the "newBlockHeaders"
-      // JSON-RPC call. When a transaction rejected by a node,
+      // JSON-RPC call. When a transaction is rejected by a node,
       // sendSignedTransaction hence throws an error. We simply ignore this
       // error here and use the polling tactic below. For more details see:
       // https://github.com/leapdao/leap-node/issues/255
