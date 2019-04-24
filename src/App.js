@@ -139,7 +139,7 @@ else if (window.location.hostname.indexOf("burner.leapdao.org") >= 0) {
   WEB3_PROVIDER = "wss://rinkeby.infura.io/ws/v3/f039330d8fb747e48a7ce98f51400d65";
   // LEAP token instead of DAI
   DAI_TOKEN_ADDR = '0xD2D0F8a6ADfF16C2098101087f9548465EC96C98';
-  P_DAI_TOKEN_ADDR = '0xD2D0F8a6ADfF16C2098101087f9548465EC96C98';  
+  P_DAI_TOKEN_ADDR = '0xD2D0F8a6ADfF16C2098101087f9548465EC96C98';
   leapNetwork = "Leap Testnet";
   // Testnet Leap Bridge(ExitHandler)
   BRIDGE_ADDR = '0x2c2a3b359edbCFE3c3Ac0cD9f9F1349A96C02530';
@@ -156,7 +156,7 @@ else if (window.location.hostname.indexOf("sundai.io") >= 0) {
 
   // mainnet sunDAI for Plasma DAI
   P_DAI_TOKEN_ADDR = '0x3cC0DF021dD36eb378976142Dc1dE3F5726bFc48';
-  
+
   CLAIM_RELAY = false;
   ERC20NAME = false;
   ERC20TOKEN = false;
@@ -172,7 +172,7 @@ else if (window.location.hostname.indexOf("sundai.local") >= 0 ||
   // testnet sunDAI for Plasma DAI
   DAI_TOKEN_ADDR = '0xD2D0F8a6ADfF16C2098101087f9548465EC96C98';
   P_DAI_TOKEN_ADDR = '0xeFb369E2c694Bc0ba31945e0D3ac91Ab8E943be3';
-  
+
   // Testnet Leap Bridge(ExitHandler)
   BRIDGE_ADDR = '0x2c2a3b359edbCFE3c3Ac0cD9f9F1349A96C02530';
 
@@ -1742,7 +1742,7 @@ render() {
                       // Use xDai as default token
                       const tokenAddress = ERC20TOKEN === false ? 0 : this.state.contracts[ERC20TOKEN]._address;
                       // -- Temp hacks
-                      const expirationTime = 365; // Hard-coded to 1 year link expiration. 
+                      const expirationTime = 365; // Hard-coded to 1 year link expiration.
                       const amountToSend = amount*10**18 ; // Conversion to wei
                       // --
                       if(!ERC20TOKEN)
@@ -2083,20 +2083,19 @@ const isNFT = (color: Number): boolean => color >= NFT_COLOR_BASE;
 // body though.
 async function tokenSend(to, value, gasLimit, txData, cb) {
   let { account, web3, xdaiweb3, metaAccount } = this.state
-  if(typeof gasLimit == "function"){
+  if(typeof gasLimit === "function"){
     cb = gasLimit
   }
 
-  if(typeof txData == "function"){
+  if(typeof txData === "function"){
     cb = txData
   }
 
   value = xdaiweb3.utils.toWei(""+value, "ether")
   const color = await xdaiweb3.getColor(P_DAI_TOKEN_ADDR);
-
-  let receipt;
+  console.log({ account, to, value, color });
   try {
-    receipt = await tokenSendV2(
+    const receipt = await tokenSendV2(
       account,
       to,
       value,
@@ -2105,7 +2104,13 @@ async function tokenSend(to, value, gasLimit, txData, cb) {
       web3,
       metaAccount && metaAccount.privateKey
     )
+
+    cb(null, receipt);
   } catch(err) {
+    cb({
+      error: err,
+      request: { account, to, value, color },
+    });
     // NOTE: The callback cb of tokenSend is not used correctly in the expected
     // format cb(error, receipt) throughout the app. We hence cannot send
     // errors in the callback :( When no receipt is returned (e.g. null), the
@@ -2113,8 +2118,6 @@ async function tokenSend(to, value, gasLimit, txData, cb) {
     // not ideal and should be changed in the future. We opened an issue on the
     // upstream repo: https://github.com/austintgriffith/burner-wallet/issues/157
   }
-
-  cb(receipt);
 }
 
 async function tokenSendV2(from, to, value, color, xdaiweb3, web3, privateKey) {
