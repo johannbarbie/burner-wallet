@@ -2110,7 +2110,7 @@ async function tokenSend(to, value, gasLimit, txData, cb) {
     // format cb(error, receipt) throughout the app. We hence cannot send
     // errors in the callback :( When no receipt is returned (e.g. null), the
     // burner wallet will react with not resolving the "sending" view. This is
-    // not ideal and should be changed in the future. We opened a issue on the
+    // not ideal and should be changed in the future. We opened an issue on the
     // upstream repo: https://github.com/austintgriffith/burner-wallet/issues/157
   }
 
