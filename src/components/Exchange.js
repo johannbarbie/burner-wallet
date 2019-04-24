@@ -210,7 +210,7 @@ export default class Exchange extends React.Component {
     })
     .then(response => response.json())
     .then(rsp => {
-      if (rsp.length === 0) {
+      if (rsp.length === 0 || !rsp.reduce) {
         this.setState({
           pendingMsg: null
         });
