@@ -2178,7 +2178,7 @@ async function tokenSendV2(from, to, value, color, xdaiweb3, web3, privateKey) {
   let rounds = 50;
 
   while (rounds--) {
-    let res = await xdaiweb3.eth.getTransaction(tx.hash())
+    let res = await xdaiweb3.eth.getTransaction(signedTx.hash())
 
     if (res && res.blockHash) {
       receipt = res;
