@@ -257,7 +257,26 @@ export default class Exchange extends React.Component {
 
     console.log('Exitable amount', amount.toString());
 
-    let rsp = await axios.get(`${this.props.marketMaker}/deals`, { crossdomain: true });
+    let rsp;
+    try {
+      rsp = await axios.get(`${this.props.marketMaker}/deals`, { crossdomain: true });
+    } catch (e) {
+      console.error(e);
+      this.props.changeAlert({
+        type: 'warning',
+        message: 'Failed to fetch markets'
+      });
+      return;
+    }
+
+    if (rsp.data.errorMessage) {
+      console.error(rsp.data);
+      this.props.changeAlert({
+        type: 'warning',
+        message: 'Failed to fetch markets: ' + rsp.data.errorMessage
+      });
+      return;
+    }
 
     const market = rsp.data.deals.find(deal => deal.color === color);
     if (!market || lessThan(bi(market.balance), amount)) {
@@ -278,15 +297,25 @@ export default class Exchange extends React.Component {
       loaderBarStatusText:"Transferring to market maker...",
     })
 
-    let receipt = await this.props.tokenSendV2(
-      this.state.daiAddress,
-      mmAddress,
-      amount,
-      color,
-      this.state.xdaiweb3,
-      this.props.web3,
-      this.state.mainnetMetaAccount && this.state.mainnetMetaAccount.privateKey
-    )
+    let receipt;
+    try {
+      receipt = await this.props.tokenSendV2(
+        this.state.daiAddress,
+        mmAddress,
+        amount,
+        color,
+        this.state.xdaiweb3,
+        this.props.web3,
+        this.state.mainnetMetaAccount && this.state.mainnetMetaAccount.privateKey
+      )
+    } catch (e) {
+      console.error(e);
+      this.props.changeAlert({
+        type: 'warning',
+        message: 'Transfer failed'
+      });
+      return;
+    }
 
     console.log('Transfer to market maker:', receipt);
 
@@ -305,7 +334,17 @@ export default class Exchange extends React.Component {
         type: 'warning',
         message: 'Failed to sell'
       });
+      return;
     });
+
+    if (rsp.data.errorMessage) {
+      console.error(rsp.data);
+      this.props.changeAlert({
+        type: 'warning',
+        message: 'Failed to sell: ' + rsp.data.errorMessage
+      });
+      return;
+    }
 
     console.log('Payout tx', rsp.data);
 
@@ -509,7 +548,8 @@ export default class Exchange extends React.Component {
     this.updatePendingExits(this.state.daiAddress, xdaiweb3)
 
     if (!this.state.notSundai) {
-      const exitableSunDaiBalance = await this.getWrappedDaiBalance();
+      const exitableSunDaiBalance = await this.getWrappedDaiBalance()
+        .catch(e => console.error('Failed to read extable daiBalance for sunDai', e));
       this.setState({ exitableSunDaiBalance });
     }
 
@@ -1740,6 +1780,10 @@ export default class Exchange extends React.Component {
                     this.setState({ amount: "", daiToXdaiMode: false });
                   }).catch(err => {
                     console.log(err);
+                    this.props.changeAlert({
+                      type: 'warning',
+                      message: 'Failed to exit sunDAI'
+                    });
                   });
 
                 }else{
@@ -1783,6 +1827,10 @@ export default class Exchange extends React.Component {
                       this.setState({ amount: "", daiToXdaiMode: false });
                     }).catch(err => {
                       console.log(err);
+                      this.props.changeAlert({
+                        type: 'warning',
+                        message: 'Failed to exit sunDAI'
+                      });
                     });
                   }
                 }
