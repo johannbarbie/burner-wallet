@@ -2138,21 +2138,32 @@ async function tokenSendV2(from, to, value, color, xdaiweb3, web3, privateKey) {
   }
 
   const signedTx = privateKey ? await transaction.signAll(privateKey) : await transaction.signWeb3(web3);
+  const rawTx = signedTx.hex();
+
+  // NOTE: Leapdao's Plasma implementation currently doesn't return receipts.
+  // We hence have to periodically query the leap node to check whether our
+  // transaction has been included into the chain. We assume that if it hasn't
+  // been included after 5000ms (50 rounds at a 100ms timeout), it failed.
+  // Unfortunately, at this point we cannot provide an error message for why
 
   let receipt;
-  try {
-    // web3 hangs here on invalid txs, trying to get receipt?
-    // await this.web3.eth.sendSignedTransaction(tx.hex());
-    await new Promise(
-      (resolve, reject) => {
-        xdaiweb3.currentProvider.send(
-          { jsonrpc: '2.0', id: 42, method: 'eth_sendRawTransaction', 'params': [signedTx.hex()] },
-          (err, res) => { if (err) { return reject(err); } resolve(res); }
-        );
-      }
-    );
+  let rounds = 50;
 
-  } catch(err) {
+  while (rounds--) {
+    // redundancy rules ✊
+    try {
+      // web3 hangs here on invalid txs, trying to get receipt?
+      // await this.web3.eth.sendSignedTransaction(tx.hex());
+      await new Promise(
+        (resolve, reject) => {
+          xdaiweb3.currentProvider.send(
+            { jsonrpc: '2.0', id: 42, method: 'eth_sendRawTransaction', 'params': [rawTx] },
+            (err, res) => { if (err) { return reject(err); } resolve(res); }
+          );
+        }
+      );
+    } catch(err) {
+      // ignore for now
       console.log(err);
       // NOTE: Leap's node currently doesn't implement the "newBlockHeaders"
       // JSON-RPC call. When a transaction is rejected by a node,
@@ -2167,17 +2178,8 @@ async function tokenSendV2(from, to, value, color, xdaiweb3, web3, privateKey) {
       // if (!err.message.includes(messageToIgnore)) {
       //  throw err;
       // }
-  }
+    }
 
-  // NOTE: Leapdao's Plasma implementation currently doesn't return receipts.
-  // We hence have to periodically query the leap node to check whether our
-  // transaction has been included into the chain. We assume that if it hasn't
-  // been included after 5000ms (50 rounds at a 100ms timeout), it failed.
-  // Unfortunately, at this point we cannot provide an error message for why
-
-  let rounds = 50;
-
-  while (rounds--) {
     let res = await xdaiweb3.eth.getTransaction(signedTx.hash())
 
     if (res && res.blockHash) {
