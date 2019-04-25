@@ -109,7 +109,7 @@ if (window.location.hostname.indexOf("localhost") >= 0 || window.location.hostna
   // Testnet Leap Bridge(ExitHandler)
   BRIDGE_ADDR = '0x2c2a3b359edbCFE3c3Ac0cD9f9F1349A96C02530';
 
-  MARKET_MAKER = 'https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet/';
+  MARKET_MAKER = 'https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet';
 
   CLAIM_RELAY = false;
   ERC20NAME = false;
@@ -148,7 +148,7 @@ else if (window.location.hostname.indexOf("burner.leapdao.org") >= 0) {
   // Testnet Leap Bridge(ExitHandler)
   BRIDGE_ADDR = '0x2c2a3b359edbCFE3c3Ac0cD9f9F1349A96C02530';
 
-  MARKET_MAKER = 'https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet/';
+  MARKET_MAKER = 'https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet';
 
   CLAIM_RELAY = false;
   ERC20NAME = false;
@@ -163,7 +163,7 @@ else if (window.location.hostname.indexOf("sundai.io") >= 0) {
   // mainnet sunDAI for Plasma DAI
   P_DAI_TOKEN_ADDR = '0x3cC0DF021dD36eb378976142Dc1dE3F5726bFc48';
 
-  MARKET_MAKER = '';
+  MARKET_MAKER = 'https://k238oyefqc.execute-api.eu-west-1.amazonaws.com/mainnet';
   
   CLAIM_RELAY = false;
   ERC20NAME = false;
@@ -184,7 +184,7 @@ else if (window.location.hostname.indexOf("sundai.local") >= 0 ||
   // Testnet Leap Bridge(ExitHandler)
   BRIDGE_ADDR = '0x2c2a3b359edbCFE3c3Ac0cD9f9F1349A96C02530';
 
-  MARKET_MAKER = 'https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet/';
+  MARKET_MAKER = 'https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet';
 
   CLAIM_RELAY = false;
   ERC20NAME = false;
