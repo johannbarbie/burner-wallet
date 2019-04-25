@@ -2141,21 +2141,32 @@ async function tokenSendV2(from, to, value, color, xdaiweb3, web3, privateKey) {
 
   let receipt;
   try {
-    receipt = await xdaiweb3.eth.sendSignedTransaction(signedTx.hex())
+    // web3 hangs here on invalid txs, trying to get receipt?
+    // await this.web3.eth.sendSignedTransaction(tx.hex());
+    await new Promise(
+      (resolve, reject) => {
+        xdaiweb3.currentProvider.send(
+          { jsonrpc: '2.0', id: 42, method: 'eth_sendRawTransaction', 'params': [signedTx.hex()] },
+          (err, res) => { if (err) { return reject(err); } resolve(res); }
+        );
+      }
+    );
+
   } catch(err) {
+      console.log(err);
       // NOTE: Leap's node currently doesn't implement the "newBlockHeaders"
       // JSON-RPC call. When a transaction is rejected by a node,
       // sendSignedTransaction hence throws an error. We simply ignore this
       // error here and use the polling tactic below. For more details see:
       // https://github.com/leapdao/leap-node/issues/255
 
-      const messageToIgnore = "Failed to subscribe to new newBlockHeaders to confirm the transaction receipts.";
+      // const messageToIgnore = "Failed to subscribe to new newBlockHeaders to confirm the transaction receipts.";
       // NOTE: In the case where we want to ignore web3's error message, there's
       // "\r\n {}" included in the error message, which is why we cannot
       // compare with the equal operator, but have to use String.includes.
-      if (!err.message.includes(messageToIgnore)) {
-        throw err;
-      }
+      // if (!err.message.includes(messageToIgnore)) {
+      //  throw err;
+      // }
   }
 
   // NOTE: Leapdao's Plasma implementation currently doesn't return receipts.
@@ -2163,25 +2174,26 @@ async function tokenSendV2(from, to, value, color, xdaiweb3, web3, privateKey) {
   // transaction has been included into the chain. We assume that if it hasn't
   // been included after 5000ms (50 rounds at a 100ms timeout), it failed.
   // Unfortunately, at this point we cannot provide an error message for why
-  // the transaction wasn't included as the leap node doesn't provide one.
+
   let rounds = 50;
-  let txIncluded = false;
+
   while (rounds--) {
-      const res = await xdaiweb3.eth.getTransaction(signedTx.hash())
+    let res = await xdaiweb3.eth.getTransaction(tx.hash())
 
-      if (res && res.blockHash) {
-          txIncluded = true;
-          break;
-      } else {
-        setTimeout(null, 100);
-      }
+    if (res && res.blockHash) {
+      receipt = res;
+      break;
+    }
+
+    // wait ~100ms
+    await new Promise((resolve) => setTimeout(() => resolve(), 100));
   }
 
-  if (txIncluded) {
+  if (receipt) {
     return receipt;
-  } else {
-    throw new Error("Transaction wasn't included into a block.");
   }
+
+  throw new Error("Transaction wasn't included into a block.");
 }
 
 let sortByBlockNumberDESC = (a,b)=>{
@@ -2208,4 +2220,7 @@ export default App;
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
+};
+
+async plasmaSendAsyncTx(tx, web3) {
 };
