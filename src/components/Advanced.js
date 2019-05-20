@@ -1,7 +1,7 @@
 import React from 'react';
 import { Scaler } from "dapparatus";
-import Ruler from "./Ruler";
-import {CopyToClipboard} from "react-copy-to-clipboard";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import { getPrivateKeyFromMnemonic } from 'ethereum-mnemonic-privatekey-utils';
 import i18n from '../i18n';
 const QRCode = require('qrcode.react');
 
@@ -123,8 +123,7 @@ export default class Advanced extends React.Component {
                     if(!this.state.newSeedPhrase){
                       changeAlert({type: 'warning', message: 'Invalid seed phrase.'})
                     }else{
-                      let pkutils = require("ethereum-mnemonic-privatekey-utils")
-                      const newPrivateKey = pkutils.getPrivateKeyFromMnemonic(this.state.newSeedPhrase)
+                      const newPrivateKey = getPrivateKeyFromMnemonic(this.state.newSeedPhrase)
                       changeView('main')
                       setPossibleNewPrivateKey("0x"+newPrivateKey)
                     }
