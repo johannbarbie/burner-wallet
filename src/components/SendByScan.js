@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import QrReader from "react-qr-reader";
 import FileReaderInput from 'react-file-reader-input';
-import QrCode from 'qrcode-reader';
 import qrimage from '../qrcode.png';
 import RNMessageChannel from 'react-native-webview-messaging';
 import i18n from "../i18n";
@@ -146,8 +145,12 @@ class SendByScan extends Component {
       let reader = new FileReader();
       reader.onload = (e) => {
         this.setState({imageData:e.target.result})
-        base64ToBitmap(e.target.result)
-          .then(bitmap => {
+        Promise.all([
+          base64ToBitmap(e.target.result),
+          import('qrcode-reader')
+        ])
+          .then(([bitmap, { default: QrCode }]) => {
+            console.log(QrCode);
             let qr = new QrCode();
             qr.callback = (err, value) => {
               this.setState({ isLoading: false });
