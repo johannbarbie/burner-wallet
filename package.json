@@ -42,7 +42,6 @@
     "jest-pnp-resolver": "1.0.2",
     "jest-resolve": "23.6.0",
     "jest-watch-typeahead": "^0.2.1",
-    "jimp": "^0.6.0",
     "jsbi-utils": "^1.0.0",
     "leap-core": "0.29.1",
     "mini-css-extract-plugin": "0.5.0",
@@ -99,6 +98,7 @@
   ],
   "devDependencies": {
     "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "@babel/plugin-transform-react-jsx-self": "^7.2.0",
     "clevis": "github:austintgriffith/clevis#master",
     "cors": "^2.8.4",
     "dotenv": "^6.2.0",
