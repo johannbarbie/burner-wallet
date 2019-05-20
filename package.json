@@ -98,18 +98,18 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "s3": "^4.4.0",
-    "path": "^0.12.7",
-    "node-sass": "^4.11.0",
-    "helmet": "^3.14.0",
-    "fs": "0.0.1-security",
-    "express": "^4.16.4",
-    "dotenv": "^6.2.0",
-    "cors": "^2.8.4",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
     "clevis": "github:austintgriffith/clevis#master",
+    "cors": "^2.8.4",
+    "dotenv": "^6.2.0",
+    "express": "^4.16.4",
+    "fs": "0.0.1-security",
+    "helmet": "^3.14.0",
     "mocha": "^5.2.0",
+    "node-sass": "^4.11.0",
     "openzeppelin-solidity": "2.0.0",
-    "webpack": "^4.28.4"
+    "path": "^0.12.7",
+    "s3": "^4.4.0"
   },
   "jest": {
     "collectCoverageFrom": [
