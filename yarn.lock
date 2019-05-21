@@ -4020,12 +4020,11 @@ damerau-levenshtein@^1.0.0, damerau-levenshtein@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.5.tgz#780cf7144eb2e8dbd1c3bb83ae31100ccc31a414"
 
-dapparatus@leapdao/dapparatus#better-bundling:
+dapparatus@leapdao/dapparatus#pdai-more-changes:
   version "1.0.71"
-  resolved "https://codeload.github.com/leapdao/dapparatus/tar.gz/fb3c1b8c455d5e76add7605106bb53478930b75c"
+  resolved "https://codeload.github.com/leapdao/dapparatus/tar.gz/66912e7a33acb8828f8d620733db11a1c51481cf"
   dependencies:
     deepmerge "^2.1.1"
-    ethereum-ens "^0.7.4"
     idempotent-babel-polyfill "^7.0.0"
     md5 "^2.2.1"
     prop-types "^15.6.2"
@@ -4443,11 +4442,7 @@ dotenv@4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-4.0.0.tgz#864ef1379aced55ce6f95debecdce179f7a0cd1d"
 
-dotenv@6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-6.0.0.tgz#24e37c041741c5f4b25324958ebbc34bca965935"
-
-dotenv@^6.1.0:
+dotenv@^6.1.0, dotenv@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-6.2.0.tgz#941c0410535d942c8becf28d3f357dbd9d476064"
 
@@ -5044,7 +5039,7 @@ eth-crypto@^1.2.7, eth-crypto@^1.3.2:
     ethers "3.0.27"
     secp256k1 "3.7.0"
 
-eth-ens-namehash@2.0.8, eth-ens-namehash@^2.0.0, eth-ens-namehash@^2.0.8:
+eth-ens-namehash@2.0.8, eth-ens-namehash@^2.0.8:
   version "2.0.8"
   resolved "https://registry.yarnpkg.com/eth-ens-namehash/-/eth-ens-namehash-2.0.8.tgz#229ac46eca86d52e0c991e7cb2aef83ff0f68bcf"
   dependencies:
@@ -5143,18 +5138,6 @@ ethereum-common@0.2.0:
 ethereum-common@^0.0.18:
   version "0.0.18"
   resolved "https://registry.yarnpkg.com/ethereum-common/-/ethereum-common-0.0.18.tgz#2fdc3576f232903358976eb39da783213ff9523f"
-
-ethereum-ens@^0.7.4:
-  version "0.7.7"
-  resolved "https://registry.yarnpkg.com/ethereum-ens/-/ethereum-ens-0.7.7.tgz#43e104552b9ad70b232a5d98b26367604b4e055c"
-  dependencies:
-    bluebird "^3.4.7"
-    eth-ens-namehash "^2.0.0"
-    js-sha3 "^0.5.7"
-    pako "^1.0.4"
-    text-encoding "^0.6.4"
-    underscore "^1.8.3"
-    web3 "1.0.0-beta.37"
 
 ethereum-mnemonic-privatekey-utils@^1.0.5:
   version "1.0.5"
@@ -9599,7 +9582,7 @@ package-json@^4.0.0:
     registry-url "^3.0.3"
     semver "^5.1.0"
 
-pako@^1.0.4, pako@~1.0.5:
+pako@~1.0.5:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.10.tgz#4328badb5086a426aa90f541977d4955da5c9732"
 
@@ -12952,10 +12935,6 @@ test-exclude@^4.2.1:
     read-pkg-up "^1.0.1"
     require-main-filename "^1.0.1"
 
-text-encoding@^0.6.4:
-  version "0.6.4"
-  resolved "https://registry.yarnpkg.com/text-encoding/-/text-encoding-0.6.4.tgz#e399a982257a276dae428bb92845cb71bdc26d19"
-
 text-hex@1.0.x:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/text-hex/-/text-hex-1.0.0.tgz#69dc9c1b17446ee79a92bf5b884bb4b9127506f5"
@@ -13252,10 +13231,6 @@ unbzip2-stream@^1.0.9:
 underscore@1.8.3:
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.8.3.tgz#4f3fb53b106e6097fcf9cb4109f2a5e9bdfa5022"
-
-underscore@^1.8.3:
-  version "1.9.1"
-  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.9.1.tgz#06dce34a0e68a7babc29b365b8e74b8925203961"
 
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"
