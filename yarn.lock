@@ -8332,6 +8332,16 @@ lcid@^2.0.0:
   dependencies:
     invert-kv "^2.0.0"
 
+leap-core@0.29.0:
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/leap-core/-/leap-core-0.29.0.tgz#e59293a9b5ec8f292331b8a7961bfa8cfbeec8a1"
+  dependencies:
+    "@types/web3" "^1.0.18"
+    babel-polyfill "^6.26.0"
+    ethereumjs-util "6.0.0"
+    jsbi-utils "^1.0.0"
+    node-fetch "^2.3.0"
+
 leap-core@0.29.1:
   version "0.29.1"
   resolved "https://registry.yarnpkg.com/leap-core/-/leap-core-0.29.1.tgz#333cf701c42e49a09c8a9fc422aa6bbbbdc49068"
@@ -11063,7 +11073,7 @@ react-dev-utils@^8.0.0:
     strip-ansi "5.0.0"
     text-table "0.2.0"
 
-react-dom@^16.6.0:
+react-dom@^16.4.1, react-dom@^16.6.0:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.8.6.tgz#71d6303f631e8b0097f56165ef608f051ff6e10f"
   dependencies:
@@ -11228,7 +11238,7 @@ react-transition-group@^1.2.0:
     prop-types "^15.5.6"
     warning "^3.0.0"
 
-react@^16.6.0:
+react@^16.4.1, react@^16.6.0:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react/-/react-16.8.6.tgz#ad6c3a9614fd3a4e9ef51117f54d888da01f2bbe"
   dependencies:
@@ -14047,7 +14057,7 @@ web3-shh@1.0.0-beta.55:
     web3-providers "1.0.0-beta.55"
     web3-utils "1.0.0-beta.55"
 
-web3-utils@1.0.0-beta.37:
+web3-utils@1.0.0-beta.37, web3-utils@^1.0.0-beta.37:
   version "1.0.0-beta.37"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.0.0-beta.37.tgz#ab868a90fe5e649337e38bdaf72133fcbf4d414d"
   dependencies:
@@ -14059,7 +14069,7 @@ web3-utils@1.0.0-beta.37:
     underscore "1.8.3"
     utf8 "2.1.1"
 
-web3-utils@1.0.0-beta.55, web3-utils@^1.0.0-beta.37:
+web3-utils@1.0.0-beta.55, web3-utils@^1.0.0-beta.36:
   version "1.0.0-beta.55"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.0.0-beta.55.tgz#beb40926b7c04208b752d36a9bc959d27a04b308"
   dependencies:
@@ -14096,7 +14106,7 @@ web3@^0.18.2, web3@^0.18.4:
     xhr2 "*"
     xmlhttprequest "*"
 
-web3@^1.0.0-beta.33:
+web3@^1.0.0-beta.33, web3@^1.0.0-beta.36:
   version "1.0.0-beta.55"
   resolved "https://registry.yarnpkg.com/web3/-/web3-1.0.0-beta.55.tgz#8845075129299da172c2eb41a748c8a87c2a2b5a"
   dependencies:
