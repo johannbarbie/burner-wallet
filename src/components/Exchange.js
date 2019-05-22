@@ -18,6 +18,9 @@ import {
   Field
 } from 'rimble-ui'
 
+import 'react-phone-number-input/style.css'
+import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
+
 import {
   Unspent,
   Tx,
@@ -34,6 +37,7 @@ import {
 import { fromRpcSig } from 'ethereumjs-util';
 
 import { bi, add, divide } from 'jsbi-utils';
+import { authenticate, verifyNumber } from '../services/bity';
 
 const BN = Web3.utils.BN
 
@@ -125,6 +129,10 @@ export default class Exchange extends React.Component {
       xdaiMetaAccount: xdaiMetaAccount,
       daiToXdaiMode: false,
       ethToDaiMode: false,
+      bityView: 'default',
+      phoneNumber: '',
+      bityPhoneToken: '',
+      bityVerificationCode: '',
       loaderBarStatusText: i18n.t('loading'),
       loaderBarStartTime:Date.now(),
       loaderBarPercent: 2,
@@ -598,6 +606,29 @@ export default class Exchange extends React.Component {
     return (this.state.xdaiSendToAddress && this.state.xdaiSendToAddress.length === 42 && parseFloat(this.state.xdaiSendAmount)>0 && parseFloat(this.state.xdaiSendAmount) <= parseFloat(this.props.xdaiBalance))
   }
 
+  authenticateWithPhoneNumber() {
+    const { phoneNumber } = this.state
+
+    authenticate(phoneNumber).then(result => {
+      this.setState({
+        bityPhoneToken: result.phone_token,
+        bityView: 'tan'
+      })
+    }).catch(err => console.log('Error ', err))
+
+  }
+
+  validateNumber() {
+    verifyNumber({tan: this.state.bityVerificationCode, token: this.state.bityPhoneToken}).then(() => {
+      this.setState({
+        bityView: 'exchange'
+      })
+      localStorage.setItem('phoneNumber', this.state.phoneNumber);
+      localStorage.setItem('bityToken', this.state.bityPhoneToken);
+    }).catch(err => console.log('Error ', err))
+
+  }
+
   sendEth(){
 
     let actualEthSendAmount = parseFloat(this.state.ethSendAmount)/parseFloat(this.props.ethprice)
@@ -727,7 +758,7 @@ export default class Exchange extends React.Component {
     }
   }
   render() {
-    let {daiToXdaiMode,ethToDaiMode} = this.state
+    let {daiToXdaiMode,ethToDaiMode } = this.state
 
     let ethCancelButton = (
       <span style={{padding:10,whiteSpace:"nowrap"}}>
@@ -751,6 +782,15 @@ export default class Exchange extends React.Component {
       <span style={{padding:10,whiteSpace:"nowrap"}}>
         <a href="#" style={{color:"#000000"}} onClick={()=>{
           this.setState({amount:""})
+        }}>
+          <i className="fas fa-times"/> {i18n.t('cancel')}
+        </a>
+      </span>
+    )
+    let bityCancelButton = (
+      <span style={{padding:10,whiteSpace:"nowrap"}}>
+        <a href="#" style={{color:"#000000"}} onClick={()=>{
+          this.setState({bityView:'default'})
         }}>
           <i className="fas fa-times"/> {i18n.t('cancel')}
         </a>
@@ -1525,7 +1565,128 @@ export default class Exchange extends React.Component {
 
     }
 
+    let bitlyRow = ""
+    if (this.state.bityView == 'exchange') {
+      bitlyRow = (
+      <div className="content ops row">
+            <div className="col-1 p-1"  style={colStyle}>
+              <i className="fas fa-arrow-up"  />
+            </div>
+            <div className="col-6 p-1" style={colStyle}>
+              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+              <div className="input-group">
+                <RInput
+                  width={1}
+                  type="number"
+                  step="0.1"
+                  placeholder="$0.00"
+                  value={this.state.amount}
+                  onChange={event => this.updateState('amount', event.target.value)} />
+              </div>
+              </Scaler>
+            </div>
+            <div className="col-2 p-1"  style={colStyle}>
+              <Scaler config={{startZoomAt:650,origin:"0% 85%"}}>
+              {bityCancelButton}
+              </Scaler>
+            </div>
+            <div className="col-3 p-1">
 
+              <Button
+                disabled={buttonsDisabled}
+                onClick={()=>{
+                console.log("AMOUNT:",this.state.amount,"DAI BALANCE:",this.props.daiBalance)
+              }}>
+                <Scaler config={{startZoomAt:600,origin:"10% 50%"}}>
+                  <i className="fas fa-arrow-up" /> Send
+                </Scaler>
+              </Button>
+
+            </div>
+          </div>
+          );
+    } else if(this.state.bityView == 'phoneNumber') {
+      bitlyRow = (
+      <div className="content ops row">
+            <div className="col-5 p-1" style={colStyle}>
+              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+              <div className="input-group">
+                <PhoneInput
+                  placeholder="Phone Number"
+                  country="US"
+                  value={this.state.phoneNumber}
+                  onChange={value => this.setState({ phoneNumber: value })} />
+              </div>
+              </Scaler>
+            </div>
+            <div className="col-2 p-1" style={colStyle}>
+              <Scaler config={{startZoomAt:650,origin:"0% 85%"}}>
+              {bityCancelButton}
+              </Scaler>
+            </div>
+            <div className="col-5 p-1">
+              <Button
+                disabled={buttonsDisabled}
+                onClick={()=>{
+                  this.authenticateWithPhoneNumber()
+              }}>
+                <Scaler config={{startZoomAt:600,origin:"10% 50%"}}>
+                  Login with Phone Number
+                </Scaler>
+              </Button>
+
+            </div>
+          </div>
+      );
+      }
+      else if (this.state.bityView === 'tan') {
+        bitlyRow = (
+          <div className="content ops row">
+            <div className="col-5 p-1" style={colStyle}>
+              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+              <div className="input-group">
+                <RInput
+                  placeholder="Enter verification code"
+                  value={this.state.bityVerificationCode}
+                  onChange={event => this.setState({ bityVerificationCode: event.target.value })} />
+              </div>
+              </Scaler>
+            </div>
+            <div className="col-2 p-1" style={colStyle}>
+              <Scaler config={{startZoomAt:650,origin:"0% 85%"}}>
+              {bityCancelButton}
+              </Scaler>
+            </div>
+            <div className="col-5 p-1">
+              <Button
+                disabled={buttonsDisabled}
+                onClick={()=>{
+                  this.validateNumber()
+              }}>
+                <Scaler config={{startZoomAt:600,origin:"10% 50%"}}>
+                  Verify Number
+                </Scaler>
+              </Button>
+
+            </div>
+          </div>
+        )
+    } else {
+      bitlyRow = (
+        <Flex width={1} px={3}>
+            <Button width={1} mr={2} icon={'ArrowUpward'} onClick={()=>{
+              (localStorage.getItem('phoneNumber')) ? 
+                this.setState({ bityView: 'exchange' }) 
+                :
+                this.setState({ bityView: 'phoneNumber' })
+            }}>
+              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                Exchange via Bity
+              </Scaler>
+            </Button>
+        </Flex>
+      )
+          }
 
 
     let sendDaiButton = (
@@ -1696,6 +1857,7 @@ export default class Exchange extends React.Component {
         </button>
       )
     }
+    
 
     let sendXdaiButton
 
@@ -1857,6 +2019,10 @@ export default class Exchange extends React.Component {
           </div>
 
           {sendEthRow}
+
+          <div className="main-card card w-100">
+          {bitlyRow}
+          </div>
 
       </Box>
     )
