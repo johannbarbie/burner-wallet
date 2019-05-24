@@ -37,7 +37,7 @@ import {
 import { fromRpcSig } from 'ethereumjs-util';
 
 import { bi, add, divide } from 'jsbi-utils';
-import { authenticate, verifyNumber } from '../services/bity';
+import { authenticate, verifyNumber, placeOrder } from '../services/bity';
 
 const BN = Web3.utils.BN
 
@@ -606,6 +606,22 @@ export default class Exchange extends React.Component {
     return (this.state.xdaiSendToAddress && this.state.xdaiSendToAddress.length === 42 && parseFloat(this.state.xdaiSendAmount)>0 && parseFloat(this.state.xdaiSendAmount) <= parseFloat(this.props.xdaiBalance))
   }
 
+  placeOrder() {
+    const { amount, bityPhoneToken } = this.state
+    const { address } = this.props
+    const data = {
+      address,
+      amount,
+      token: bityPhoneToken
+    }
+    console.log('Data ', data)
+    placeOrder(data).then(result => {
+      console.log(result)
+    }).catch(err => {
+      this.props.changeAlert({type: 'warning', message: err.errors[0].message});
+    })
+  }
+
   authenticateWithPhoneNumber() {
     const { phoneNumber } = this.state
 
@@ -623,8 +639,8 @@ export default class Exchange extends React.Component {
       this.setState({
         bityView: 'exchange'
       })
-      localStorage.setItem('phoneNumber', this.state.phoneNumber);
-      localStorage.setItem('bityToken', this.state.bityPhoneToken);
+      // localStorage.setItem('phoneNumber', this.state.phoneNumber);
+      // localStorage.setItem('bityToken', this.state.bityPhoneToken);
     }).catch(err => console.log('Error ', err))
 
   }
@@ -1566,7 +1582,7 @@ export default class Exchange extends React.Component {
     }
 
     let bitlyRow = ""
-    if (this.state.bityView == 'exchange') {
+    if (this.state.bityView === 'exchange') {
       bitlyRow = (
       <div className="content ops row">
             <div className="col-1 p-1"  style={colStyle}>
@@ -1577,9 +1593,8 @@ export default class Exchange extends React.Component {
               <div className="input-group">
                 <RInput
                   width={1}
-                  type="number"
                   step="0.1"
-                  placeholder="$0.00"
+                  placeholder="Amount in ETH"
                   value={this.state.amount}
                   onChange={event => this.updateState('amount', event.target.value)} />
               </div>
@@ -1595,6 +1610,7 @@ export default class Exchange extends React.Component {
               <Button
                 disabled={buttonsDisabled}
                 onClick={()=>{
+                  this.placeOrder();
                 console.log("AMOUNT:",this.state.amount,"DAI BALANCE:",this.props.daiBalance)
               }}>
                 <Scaler config={{startZoomAt:600,origin:"10% 50%"}}>
@@ -1605,7 +1621,7 @@ export default class Exchange extends React.Component {
             </div>
           </div>
           );
-    } else if(this.state.bityView == 'phoneNumber') {
+    } else if(this.state.bityView === 'phoneNumber') {
       bitlyRow = (
       <div className="content ops row">
             <div className="col-5 p-1" style={colStyle}>
@@ -1675,9 +1691,6 @@ export default class Exchange extends React.Component {
       bitlyRow = (
         <Flex width={1} px={3}>
             <Button width={1} mr={2} icon={'ArrowUpward'} onClick={()=>{
-              (localStorage.getItem('phoneNumber')) ? 
-                this.setState({ bityView: 'exchange' }) 
-                :
                 this.setState({ bityView: 'phoneNumber' })
             }}>
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
