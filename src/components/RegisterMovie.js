@@ -742,12 +742,16 @@ export default class RegisterMovie extends React.Component {
 
   render() {
     const {
-      rightholderAddress,
       uploader,
       canRegister,
       movie,
+      provider,
       upload
     } = this.state;
+    let { rightholderAddress } = this.state;
+    if (!rightholderAddress) {
+      rightholderAddress = provider.mainnet.address;
+    }
     return (
       <div>
         <div className="content row">
