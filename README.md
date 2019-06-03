@@ -161,7 +161,7 @@ Your frontend should automatically reload and your account should have xDai:
 
 Are you a developer or designer that would like to help build the next iteration of the 🔥👛Burner Wallet👛🔥? Here is a short intro video to explain how to get started:
 
-[![onrampscreencast](https://user-images.githubusercontent.com/2653167/48449772-ee8e9b00-e760-11e8-93dd-ab2105a1c28d.png)](https://youtu.be/bAHluAuyLqo)
+[![onrampscreencast](https://user-images.githubusercontent.com/2653167/48449772-ee8e9b00-e760-11e8-93dd-ab2105a1c28d.png)](https://youtu.be/bAHluAuyLqo) [![Greenkeeper badge](https://badges.greenkeeper.io/leapdao/burner-wallet.svg)](https://greenkeeper.io/)
 
 To learn more about Clevis and Dapparatus check out some of the following articles:
 
