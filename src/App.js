@@ -526,12 +526,12 @@ export default class App extends Component {
 
   }
   longPoll() {
-    fetch("https://api.coinmarketcap.com/v2/ticker/1027/")
-      .then(r => r.json())
-      .then((response)=>{
-        const ethprice = response.data.quotes.USD.price
-        this.setState({ethprice})
-      })
+    // fetch("https://api.coinmarketcap.com/v2/ticker/1027/")
+    //   .then(r => r.json())
+    //   .then((response)=>{
+    //     const ethprice = response.data.quotes.USD.price
+    //     this.setState({ethprice})
+    //   })
   }
   setPossibleNewPrivateKey(value){
     this.setState({possibleNewPrivateKey:value},()=>{
