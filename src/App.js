@@ -157,7 +157,7 @@ export default class App extends Component {
   currencyDisplay = (amount)=>{
     let { exchangeRate } = this.state
     let locale = localStorage.getItem('i18nextLng')
-    let balance = Math.floor(amount * 100) / 100
+    let balance = (typeof amount !== 'undefined') ? Math.floor(amount * 100) / 100 : 0;
     
     let symbol = localStorage.getItem('currency') || Object.keys(exchangeRate)[0];
     let rate = Object.values(exchangeRate)[0];
@@ -852,7 +852,8 @@ export default class App extends Component {
                           changeAlert={this.changeAlert}
                           address={this.state.account}
                           orderId={orderId} 
-                        />
+                          currencyDisplay={this.props.currencyDisplay}
+                          />
                       </Card>
                       <Bottom
                         action={()=>{
@@ -949,6 +950,7 @@ export default class App extends Component {
                             ethBalance={this.state.ethBalance}
                             changeView={this.changeView.bind(this)}
                             setReceipt={this.setReceipt.bind(this)}
+                            currencyDisplay={this.currencyDisplay}
                           />
                         </Card>
                         <Bottom

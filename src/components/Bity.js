@@ -345,6 +345,7 @@ class Bity extends Component {
 
   render() {
     const { fields } = this.state;
+    const { currencyDisplay } = this.props;
     return (
       <div>
         <Box mb={4}>
@@ -400,7 +401,7 @@ class Bity extends Component {
                   ? "grey"
                   : "red"
               }
-              placeholder="$0.00"
+              placeholder={currencyDisplay()}
             />
             {fields.amount.message ? (
               <Error>{fields.amount.message}</Error>

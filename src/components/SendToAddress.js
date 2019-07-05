@@ -204,6 +204,7 @@ export default class SendToAddress extends React.Component {
       canSend,
       toAddress
     } = this.state;
+    let { currencyDisplay } = this.props;
 
     /*let sendMessage = ""
     if(this.state.message){
@@ -227,7 +228,7 @@ export default class SendToAddress extends React.Component {
       <Input
         width={1}
         type="number"
-        placeholder="$0.00"
+        placeholder={currencyDisplay()}
         value={this.state.amount}
         ref={(input) => { this.amountInput = input; }}
         onChange={event => this.updateState('amount', event.target.value)}
@@ -239,7 +240,7 @@ export default class SendToAddress extends React.Component {
           width={1}
           type="number"
           readOnly
-          placeholder="$0.00"
+          placeholder={currencyDisplay()}
           value={this.state.amount}
           ref={(input) => { this.amountInput = input; }}
           onChange={event => this.updateState('amount', event.target.value)}

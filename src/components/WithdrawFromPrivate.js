@@ -111,6 +111,7 @@ export default class SendToAddress extends React.Component {
 
   render() {
     let { canWithdraw, fromAddress } = this.state;
+    let { currencyDisplay } = this.props;
 
     let products = []
     for(let p in this.props.products){
@@ -192,7 +193,7 @@ export default class SendToAddress extends React.Component {
                 <RInput
                   width={1}
                   type="number"
-                  placeholder="$0.00"
+                  placeholder={currencyDisplay()}
                   value={this.state.amount}
                   onChange={event => this.updateState('amount', event.target.value)} />
               </div>

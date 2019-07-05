@@ -710,6 +710,7 @@ export default class Exchange extends React.Component {
   }
   render() {
     let {daiToXdaiMode,ethToDaiMode } = this.state
+    let { currencyDisplay } = this.props;
 
     let ethCancelButton = <BorderButton className="btn-cancel" onClick={()=>{
           this.setState({amount:"",ethToDaiMode:false})
@@ -782,7 +783,7 @@ export default class Exchange extends React.Component {
                   width={1}
                   type="number"
                   step="0.1"
-                  placeholder="$0.00"
+                  placeholder={currencyDisplay()}
                   value={this.state.amount}
                   onChange={event => this.updateState('amount', event.target.value)} />
               </div>
@@ -847,7 +848,7 @@ export default class Exchange extends React.Component {
                   width={1}
                   type="number"
                   step="0.1"
-                  placeholder="$0.00"
+                  placeholder={currencyDisplay()}
                   value={this.state.amount}
                   onChange={event => this.updateState('amount', event.target.value)} />
               </div>
@@ -987,7 +988,7 @@ export default class Exchange extends React.Component {
                   width={1}
                   type="number"
                   step="0.1"
-                  placeholder="$0.00"
+                  placeholder={currencyDisplay()}
                   value={this.state.amount}
                   onChange={event => this.updateState('amount', event.target.value)} />
               </div>
@@ -1092,7 +1093,7 @@ export default class Exchange extends React.Component {
                   width={1}
                   type="number"
                   step="0.1"
-                  placeholder="$0.00"
+                  placeholder={currencyDisplay()}
                   value={this.state.amount}
                   onChange={event => this.updateState('amount', event.target.value)} />
               </div>
@@ -1427,7 +1428,7 @@ export default class Exchange extends React.Component {
               <RInput
                 type="number"
                 step="0.1"
-                placeholder="$0.00"
+                placeholder={currencyDisplay()}
                 value={this.state.daiSendAmount}
                 onChange={event => this.updateState('daiSendAmount', event.target.value)}
                 width={1}
@@ -1505,7 +1506,7 @@ export default class Exchange extends React.Component {
               <RInput
                 type="number"
                 step="0.1"
-                placeholder="$0.00"
+                placeholder={currencyDisplay()}
                 value={this.state.ethSendAmount}
                 onChange={event => this.updateState('ethSendAmount', event.target.value)}
                 width={1}
@@ -1596,7 +1597,7 @@ export default class Exchange extends React.Component {
                 type="number"
                 step="0.1"
                 className="form-control"
-                placeholder="$0.00"
+                placeholder={currencyDisplay()}
                 value={this.state.xdaiSendAmount}
                 onChange={event => this.updateState('xdaiSendAmount', event.target.value)}
               />

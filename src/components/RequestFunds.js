@@ -100,7 +100,7 @@ export default class RequestFunds extends React.Component {
             <Input
               type="number"
               width={1}
-              placeholder="$0.00"
+              placeholder={currencyDisplay()}
               value={this.state.amount}
               onChange={event => this.updateState('amount', event.target.value)}
             />
