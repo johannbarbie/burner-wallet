@@ -1,7 +1,7 @@
 import React from 'react';
 import { Scaler } from "dapparatus";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import i18n from '../i18n';
+import { withTranslation } from 'react-i18next';
 import {
   Input,
   QR as QRCode,
@@ -16,7 +16,7 @@ import { getStoredValue, storeValues } from "../services/localStorage";
 
 const { CURRENCY, LINKS } = getConfig()
 
-export default class Advanced extends React.Component {
+class Advanced extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -52,8 +52,13 @@ export default class Advanced extends React.Component {
   }
 
   render(){
+<<<<<<< HEAD
     let {isVendor, balance, privateKey, changeAlert, changeView, setPossibleNewPrivateKey} = this.props
     let { currency, expertMode } = this.state
+=======
+    let {isVendor, balance, privateKey, changeAlert, changeView, setPossibleNewPrivateKey, t} = this.props
+    let { currency } = this.state
+>>>>>>> Fix Use react-i18next instead of i18n #173
 
     let url = window.location.protocol+"//"+window.location.hostname
     if(window.location.port&&window.location.port!==80&&window.location.port!==443){
@@ -112,7 +117,7 @@ export default class Advanced extends React.Component {
             changeAlert({type: 'warning', message: 'Invalid private key.'})
           }
         }}>
-          <i className="fas fa-plus-square"/> {i18n.t('create')}
+          <i className="fas fa-plus-square"/> {t('create')}
         </PrimaryButton>
       </div>
     )
@@ -153,7 +158,7 @@ export default class Advanced extends React.Component {
           }
         }}>
           <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-            <i className="fas fa-plus-square"/> {i18n.t('create')}
+            <i className="fas fa-plus-square"/> {t('create')}
           </Scaler>
         </PrimaryButton>
       </div>
@@ -203,12 +208,12 @@ export default class Advanced extends React.Component {
             <PrimaryButton width={1} onClick={()=>{
               this.setState({privateKeyQr:!this.state.privateKeyQr})
             }}>
-              <i className="fas fa-key"/> {i18n.t('show')}
+              <i className="fas fa-key"/> {t('show')}
             </PrimaryButton>
 
             <CopyToClipboard text={privateKey}>
               <PrimaryButton width={1} onClick={() => changeAlert({type: 'success', message: 'Private Key copied to clipboard'})}>
-                <i className="fas fa-key"/> {i18n.t('copy')}
+                <i className="fas fa-key"/> {t('copy')}
               </PrimaryButton>
             </CopyToClipboard>
 
@@ -226,7 +231,7 @@ export default class Advanced extends React.Component {
               changeView('burn-wallet')
             }}>
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-fire"/> {i18n.t('burn')}
+                <i className="fas fa-fire"/> {t('burn')}
               </Scaler>
             </PrimaryButton>
           </div>
@@ -241,20 +246,21 @@ export default class Advanced extends React.Component {
         {inputSeedRow}
 
         {isVendor &&
-        <div>
-          <div className="content ops row settings-row" style={{marginBottom:10}}>
-            <PrimaryButton width={1} onClick={()=>{
-              this.props.changeView("exchange")
-            }}>
-              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-key"/> {"Exchange"}
-              </Scaler>
-            </PrimaryButton>
+          <div>
+            <div className="content ops row settings-row" style={{marginBottom:10}}>
+              <PrimaryButton width={1} onClick={()=>{
+                this.props.changeView("exchange")
+              }}>
+                <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                  <i className="fas fa-key"/> {"Exchange"}
+                </Scaler>
+              </PrimaryButton>
+            </div>
           </div>
-        </div>
         }
-
       </div>
     )
   }
 }
+
+export default withTranslation()(Advanced);

@@ -1,15 +1,14 @@
-import i18next from "i18next";
+import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { fr, en, es, ca, de, ro, he, ru, pt, ja } from "./locales";
+import { initReactI18next } from 'react-i18next';
 
-const i18n = i18next;
 const options = {
   interpolation: {
     escapeValue: false // not needed for react!!
   },
 
   debug: true,
-
   resources: {
     fr: {
       common: fr.fr
@@ -53,12 +52,13 @@ const options = {
     wait: false,
     bindI18n: "languageChanged loaded",
     bindStore: "added removed",
-    nsMode: "default"
+    nsMode: "default",
+    transSupportBasicHtmlNodes: true,
   }
 };
 
-i18next.use(LanguageDetector).init(options);
-i18next.changeLanguage(navigator.language, (err, t) => {
+i18n.use(LanguageDetector).use(initReactI18next).init(options);
+i18n.changeLanguage(navigator.language, (err, t) => {
   if (err) return console.log("Something went wrong during loading");
 });
 

@@ -1,14 +1,14 @@
 import React from 'react';
-import i18n from '../i18n';
+import { withTranslation } from 'react-i18next'
 import { Icon } from 'rimble-ui'
 import { ActionButton } from '../components/Buttons'
 
-export default class Receive extends React.Component {
+class Receive extends React.Component {
   render() {
-    let {icon,text,action} = this.props
+    let {icon,text,action, t} = this.props
 
     if(!icon) icon = "times"
-    if(!text) text = i18n.t('done')
+    if(!text) text = t('done')
 
     //icon = "fas fa-"+icon
 
@@ -22,3 +22,4 @@ export default class Receive extends React.Component {
     )
   }
 }
+export default withTranslation()(Receive)

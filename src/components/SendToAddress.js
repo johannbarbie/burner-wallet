@@ -2,8 +2,8 @@ import React from 'react';
 import cookie from 'react-cookies'
 import {CopyToClipboard} from "react-copy-to-clipboard";
 import Blockies from 'react-blockies';
-import { scroller } from 'react-scroll'
-import i18n from '../i18n';
+import { scroller } from 'react-scroll';
+import { withTranslation } from 'react-i18next';
 import queryString from 'query-string';
 import {
   Box,
@@ -14,7 +14,7 @@ import { PrimaryButton, BorderButton } from "./Buttons";
 import InputInfo from "./InputInfo";
 import { getStoredValue } from "../services/localStorage";
 
-export default class SendToAddress extends React.Component {
+class SendToAddress extends React.Component {
 
   constructor(props) {
     super(props);
@@ -237,7 +237,7 @@ export default class SendToAddress extends React.Component {
         })
       }
     }else{
-      this.props.changeAlert({type: 'warning', message: i18n.t('send_to_address.error')})
+      this.props.changeAlert({type: 'warning', message: this.props.t('send_to_address.error')})
     }
   };
 
@@ -246,6 +246,8 @@ export default class SendToAddress extends React.Component {
       canSend,
       toAddress
     } = this.state;
+
+    let { t } = this.props;
 
     /*let sendMessage = ""
     if(this.state.message){
@@ -292,7 +294,7 @@ export default class SendToAddress extends React.Component {
     return (
       <div>
         <Box mb={4}>
-          <Field mb={3} label={i18n.t('send_to_address.to_address')}>
+          <Field mb={3} label={t('send_to_address.to_address')}>
             <Input
               width={1}
               type="text"
@@ -316,7 +318,7 @@ export default class SendToAddress extends React.Component {
             </CopyToClipboard>
           }</div>
 
-          <Field mb={3} label={i18n.t("send_to_address.send_amount")}>
+          <Field mb={3} label={t('send_to_address.send_amount')}>
             {amountInputDisplay}
             {/* TODO: i18n this with merging PR #195 */
             this.state.currencyWarning ? (
@@ -355,3 +357,4 @@ export default class SendToAddress extends React.Component {
     )
   }
 }
+export default withTranslation()(SendToAddress);

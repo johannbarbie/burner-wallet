@@ -1,7 +1,7 @@
 // @format
 
 import React, { Component } from "react";
-import i18n from "../i18n";
+import { withTranslation } from 'react-i18next';
 import { Flex, Box, Image, Icon } from "rimble-ui";
 import { getOrder } from "../services/bity";
 import Blockies from "react-blockies";
@@ -10,7 +10,7 @@ import Ruler from "./Ruler";
 import Loader from "./Loader";
 import burnerlogo from "../assets/burnerwallet.png";
 
-export default class BityHistory extends Component {
+class BityHistory extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -23,7 +23,7 @@ export default class BityHistory extends Component {
   }
 
   render() {
-    const { address, orderId } = this.props;
+    const { address, orderId, t } = this.props;
     const { order } = this.state;
 
     if (order) {
@@ -54,27 +54,27 @@ export default class BityHistory extends Component {
             </Box>
           </Flex>
           <Ruler />
-          <h5>{i18n.t("offramp.history.status_title")}</h5>
+          <h5>{t("offramp.history.status_title")}</h5>
           <ul style={{ listStyle: "none", paddingLeft: 0 }}>
             {order.timestamp_created && (
-              <li>✓ {i18n.t("offramp.history.status.created")+orderId}</li>
+              <li>✓ {t("offramp.history.status.created")+orderId}</li>
             )}
             {order.timestamp_payment_received && (
-              <li>✓ {i18n.t("offramp.history.status.received")}</li>
+              <li>✓ {t("offramp.history.status.received")}</li>
             )}
             {order.timestamp_executed && (
-              <li>✓ {i18n.t("offramp.history.status.executed")}</li>
+              <li>✓ {t("offramp.history.status.executed")}</li>
             )}
           </ul>
           <Ruler />
           <p style={{ color: "grey" }}>
-            *{i18n.t("offramp.history.disclaimer")}
+            *{t("offramp.history.disclaimer")}
             <a
               href="https://github.com/leapdao/burner-wallet/issues/169"
               rel="noopener noreferrer"
               target="_blank"
             >
-            {i18n.t("offramp.history.click")}
+            {t("offramp.history.click")}
             </a>
             .
           </p>
@@ -85,3 +85,4 @@ export default class BityHistory extends Component {
     }
   }
 }
+export default withTranslation()(BityHistory)

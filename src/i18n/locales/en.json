@@ -67,7 +67,8 @@
       "exchange": "Exchange"
     },
     "receive": {
-      "address_copied": "Address copied to clipboard"
+      "address_copied": "Address copied to clipboard",
+      "view_link": "<0>View on LeapDAO Testnet Explorer</0>"
     },
     "history": {
       "metamask_error": "Encrypted messaging not available with MetaMask",
@@ -152,7 +153,8 @@
         "errors": {
             "bity_connection": "There was a problem connecting to our exchange provider bity.com. Please try again later.",
             "ethgasstation_connection": "There was a problem getting the latest gas prices. Please try sending your transaction later."
-        }
+        },
+        "heading": "Transfer your ether directly to your bank account with just one click using <1>bity.com</1>, the secure swiss crypto gateway. No KYC is required within bity.com's 5000 CHF (~4500 EUR) annual limit."
     }
   }
 }

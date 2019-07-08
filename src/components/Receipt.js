@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { Blockie } from "dapparatus";
-import i18n from '../i18n';
+import { withTranslation } from 'react-i18next';
 import bityLogo from '../assets/bity.png';
 import { Image } from "rimble-ui";
 
 const BockieSize = 12
 
-export default class Receive extends React.Component {
+class Receive extends React.Component {
 
   componentDidMount(){
     console.log("RECEIPT LOADED",this.props)
@@ -39,7 +39,7 @@ export default class Receive extends React.Component {
     }
   }
   render() {
-    let {receipt, currencyDisplay} = this.props
+    let {receipt, currencyDisplay, t} = this.props
 
     let message = ""
 
@@ -99,7 +99,7 @@ export default class Receive extends React.Component {
         <div name="theVeryBottom" className="text-center bottom-text">
           <span style={{padding:10}}>
             <a href="#" style={{color:"#FFFFFF"}} onClick={()=>{this.props.goBack()}}>
-              <i className="fas fa-times"/> {i18n.t('done')}
+              <i className="fas fa-times"/> {t('done')}
             </a>
           </span>
         </div>
@@ -107,3 +107,4 @@ export default class Receive extends React.Component {
     )
   }
 }
+export default withTranslation()(Receive)

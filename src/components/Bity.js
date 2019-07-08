@@ -1,6 +1,6 @@
 //@format
 import React, { Component } from "react";
-import i18n from "../i18n";
+import { Trans, withTranslation } from 'react-i18next';
 import { Box, Field, Input } from "rimble-ui";
 import { PrimaryButton } from "./Buttons";
 import { format } from "@tammo/react-iban";
@@ -97,7 +97,7 @@ class Bity extends Component {
     try {
       await this.getMinAmount();
     } catch (err) {
-      changeAlert("warning", i18n.t("offramp.errors.bity_connection"));
+      changeAlert("warning", this.props.t("offramp.errors.bity_connection"));
     }
   }
 
@@ -141,7 +141,7 @@ class Bity extends Component {
           address
         );
       } catch (err) {
-        changeAlert("warning", i18n.t("offramp.errors.bity_connection"));
+        changeAlert("warning", this.props.t("offramp.errors.bity_connection"));
         return;
       }
 
@@ -159,7 +159,7 @@ class Bity extends Component {
         } catch (err) {
           changeAlert(
             "warning",
-            i18n.t("offramp.errors.ethgasstation_connection")
+            this.props.t("offramp.errors.ethgasstation_connection")
           );
           return;
         }
@@ -204,7 +204,7 @@ class Bity extends Component {
         from: address,
         amount: amount.value,
         result: receipt,
-        message: i18n.t("offramp.success")
+        message: this.props.t("offramp.success")
       };
       setReceipt(receiptObj);
       changeView("receipt");
@@ -290,7 +290,7 @@ class Bity extends Component {
           name: {
             value: name,
             valid: name !== "",
-            message: name === "" ? i18n.t("offramp.required") : null
+            message: name === "" ? this.props.t("offramp.required") : null
           }
         });
       } else if (input === "IBAN") {
@@ -302,10 +302,10 @@ class Bity extends Component {
           valid = true;
         } else if (validReason === "country") {
           valid = false;
-          message = i18n.t("offramp.country_not_supported");
+          message = this.props.t("offramp.country_not_supported");
         } else {
           valid = false;
-          message = i18n.t("offramp.iban_incorrect");
+          message = this.props.t("offramp.iban_incorrect");
         }
         newFields = Object.assign(fields, {
           IBAN: {
@@ -334,12 +334,12 @@ class Bity extends Component {
         let valid, message;
         if (amount < min) {
           valid = false;
-          message = `${i18n.t("offramp.amount_too_small")} ${currencyDisplay(
-            MIN_AMOUNT_DOLLARS
-          )}.`;
+          message = `${this.props.t(
+            "offramp.amount_too_small"
+          )} $${MIN_AMOUNT_DOLLARS}.`;
         } else if (amount > max) {
           valid = false;
-          message = i18n.t("offramp.amount_too_big");
+          message = this.props.t("offramp.amount_too_big");
         } else {
           valid = true;
         }
@@ -359,26 +359,26 @@ class Bity extends Component {
 
   render() {
     const { fields } = this.state;
-    const { currencyDisplay } = this.props;
-
+    let { t } = this.props;
     return (
       <div>
         <Box mb={4}>
-          {/* TODO: How to put this into i18n without creating a mess?*/}
           <P>
-            Transfer your ether directly to your bank account with just one
-            click using{" "}
-            <a
-              href="https://bity.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              bity.com
-            </a>
-            , the secure swiss crypto gateway. No KYC is required within
-            bity.com's 5000 CHF (~4500 EUR) annual limit.
-          </P>
-          <Field mb={3} label={i18n.t("offramp.form.owner")}>
+            <Trans i18nKey="offramp.heading">
+              Transfer your ether directly to your bank account with just one
+              click using 
+              <a
+                href="https://bity.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                bity.com
+              </a>
+              , the secure swiss crypto gateway. No KYC is required within
+              bity.com's 5000 CHF (~4500 EUR) annual limit.
+              </Trans>
+            </P>
+          <Field mb={3} label={t("offramp.form.owner")}>
             <Input
               width={1}
               type="text"
@@ -409,7 +409,7 @@ class Bity extends Component {
               <InputInfo color="red">{fields.IBAN.message}</InputInfo>
             ) : null}
           </Field>
-          <Field mb={3} label={i18n.t("offramp.form.amount")}>
+          <Field mb={3} label={t("offramp.form.amount")}>
             <Input
               ref="amount"
               width={1}
@@ -440,11 +440,11 @@ class Bity extends Component {
           disabled={!(fields.name.valid && fields.amount.valid)}
           onClick={this.cashout}
         >
-          {i18n.t("offramp.form.submit")}
+          {t("offramp.form.submit")}
         </PrimaryButton>
       </div>
     );
   }
 }
 
-export default Bity;
+export default withTranslation()(Bity);
