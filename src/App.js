@@ -62,7 +62,7 @@ let mainStyle = {
   mainColor:"white",
 }
 
-let title = i18n.t('app_name')
+// let title = t('app_name')
 let titleImage = (
   <span style={{paddingRight:20,paddingLeft:16}}><i className="fas fa-fire" /></span>
 )
@@ -102,7 +102,6 @@ export default class App extends Component {
   constructor(props) {
 
 
-    console.log("[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[["+title+"]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]")
     let view = 'main'
     let cachedView = getStoredValue("view")
     let cachedViewSetAge = Date.now() - getStoredValue("viewSetTime")
@@ -122,7 +121,7 @@ export default class App extends Component {
       sendKey: "",
       alert: null,
       loadingTitle:'loading...',
-      title: title,
+      title: this.props.t,
       extraHeadroom:0,
       balance: 0.00,
       vendors: {},
@@ -875,7 +874,7 @@ export default class App extends Component {
                         <div>
                           <Card>
                             <NavCard 
-                              title={i18n.t('history_chat')}
+                              title={t('history_chat')}
                               goBack={this.goBack.bind(this)}/>
                             {defaultBalanceDisplay}
                             <History
@@ -914,7 +913,7 @@ export default class App extends Component {
                         <div>
                           <Card>
                             <NavCard
-                              title={i18n.t('offramp.history.title')}
+                              title={t('offramp.history.title')}
                               goBack={this.goBack.bind(this)}/>
                             <BityHistory 
                               changeAlert={this.changeAlert}
@@ -987,7 +986,7 @@ export default class App extends Component {
                           </Card>
                           <Bottom
                             icon={"Settings"}
-                            text={i18n.t('advance_title')}
+                            text={t('advance_title')}
                             action={()=>{
                               this.changeView('advanced')
                             }}
@@ -999,7 +998,7 @@ export default class App extends Component {
                           <div>
                             {this.state.scannerOpen ? sendByScan : null}
                             <Card>
-                              <NavCard title={i18n.t("offramp.title")} goBack={this.goBack.bind(this)}/>
+                              <NavCard title={t("offramp.title")} goBack={this.goBack.bind(this)}/>
                               <div>
                                 <Balance
                                   icon={eth}
@@ -1020,7 +1019,7 @@ export default class App extends Component {
                               />
                             </Card>
                             <Bottom
-                              text={i18n.t('done')}
+                              text={t('done')}
                               action={this.goBack.bind(this)}
                             />
                           </div>
@@ -1030,7 +1029,7 @@ export default class App extends Component {
                         <div>
                           {this.state.scannerOpen ? sendByScan : null}
                           <Card>
-                            <NavCard title={i18n.t('advance_title')} goBack={this.goBack.bind(this)}/>
+                            <NavCard title={t('advance_title')} goBack={this.goBack.bind(this)}/>
                             <Advanced
                               isVendor={this.state.isVendor && this.state.isVendor.isAllowed}
                               buttonStyle={buttonStyle}
@@ -1045,7 +1044,7 @@ export default class App extends Component {
                             />
                           </Card>
                           <Bottom
-                            text={i18n.t('done')}
+                            text={t('done')}
                             action={this.goBack.bind(this)}
                           />
                         </div>
@@ -1055,7 +1054,7 @@ export default class App extends Component {
                           <div>
                             {this.state.scannerOpen ? sendByScan : null}
                             <Card>
-                              <NavCard title={i18n.t('withdraw')} goBack={this.goBack.bind(this)}/>
+                              <NavCard title={t('withdraw')} goBack={this.goBack.bind(this)}/>
                               {defaultBalanceDisplay}
                               <WithdrawFromPrivate
                                 products={this.state.products}
@@ -1089,7 +1088,7 @@ export default class App extends Component {
                         <div>
                           {this.state.scannerOpen ? sendByScan : null}
                           <Card>
-                            <NavCard title={i18n.t('send_to_address_title')} goBack={this.goBack.bind(this)}/>
+                            <NavCard title={t('send_to_address_title')} goBack={this.goBack.bind(this)}/>
                             {defaultBalanceDisplay}
                             <SendToAddress
                               parseAndCleanPath={this.parseAndCleanPath.bind(this)}
@@ -1108,7 +1107,7 @@ export default class App extends Component {
                             />
                           </Card>
                           <Bottom
-                            text={i18n.t('cancel')}
+                            text={t('cancel')}
                             action={this.goBack.bind(this)}
                           />
                         </div>
@@ -1118,7 +1117,7 @@ export default class App extends Component {
                         <div>
                           {this.state.scannerOpen ? sendByScan : null}
                           <Card>
-                            <NavCard title={i18n.t('receipt_title')} goBack={this.goBack.bind(this)}/>
+                            <NavCard title={t('receipt_title')} goBack={this.goBack.bind(this)}/>
                             <Receipt
                               receipt={this.state.receipt}
                               view={this.state.view}
@@ -1148,7 +1147,7 @@ export default class App extends Component {
                         <div>
                           {this.state.scannerOpen ? sendByScan : null}
                           <Card>
-                            <NavCard title={i18n.t('receive_title')} goBack={this.goBack.bind(this)}/>
+                            <NavCard title={t('receive_title')} goBack={this.goBack.bind(this)}/>
                             {defaultBalanceDisplay}
                             <Receive
                               view={this.state.view}
@@ -1178,7 +1177,7 @@ export default class App extends Component {
                           <div>
                             {this.state.scannerOpen ? sendByScan : null}
                             <Card>
-                              <NavCard title={i18n.t('request_funds_title')} goBack={this.goBack.bind(this)}/>
+                              <NavCard title={t('request_funds_title')} goBack={this.goBack.bind(this)}/>
                               {defaultBalanceDisplay}
                               <RequestFunds
                                 block={this.state.block}
@@ -1299,7 +1298,7 @@ export default class App extends Component {
                         <div>
                           {this.state.scannerOpen ? sendByScan : null}
                           <Card>
-                            <NavCard title={i18n.t('exchange_title')} goBack={this.goBack.bind(this)}/>
+                            <NavCard title={t('exchange_title')} goBack={this.goBack.bind(this)}/>
                             <Exchange
                               eth={eth}
                               dai={dai}
