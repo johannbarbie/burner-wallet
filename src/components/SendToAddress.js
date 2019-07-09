@@ -21,12 +21,32 @@ export default class SendToAddress extends React.Component {
 
     let initialState;
     if (props.scannerState) {
-      const { amount, message, extraMessage, toAddress } = props.scannerState
+      const {
+        scannerState: {
+          message,
+          extraMessage,
+          toAddress,
+          currency
+        },
+        convertCurrency
+      } = props;
+
+      let { scannerState: { amount } } = props;
+
+      // NOTE: Two users could have different display currencies, which is why
+      // at this point we'll have to adjust the requested amount for the user
+      // sending money.
+      const displayCurrency = localStorage.getItem("currency");
+      if (currency !== displayCurrency) {
+        amount = convertCurrency(displayCurrency, currency);
+      }
+
       initialState = {
         amount,
         message,
         extraMessage,
-        toAddress
+        toAddress,
+        currency
       }
     } else {
       const { amount, message, extraMessage } = props
@@ -37,6 +57,7 @@ export default class SendToAddress extends React.Component {
         toAddress: ""
       }
     }
+
 
     initialState.fromEns = ""
     initialState.canSend = false

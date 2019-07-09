@@ -113,6 +113,9 @@ class SendByScan extends Component {
           if (dataSplit.length > 1) {
             returnState.message = dataSplit[2]
           }
+          if (dataSplit.length > 2) {
+            returnState.currency = dataSplit[3]
+          }
           this.props.returnToState(returnState);
         } else {
             // NOTE: Everything that is not a valid Ethereum address, we insert

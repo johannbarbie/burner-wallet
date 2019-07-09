@@ -49,7 +49,12 @@ export default class RequestFunds extends React.Component {
       if(window.location.port&&window.location.port!==80&&window.location.port!==443){
         url = url+":"+window.location.port
       }
-      let qrValue = url+"/"+this.props.address+";"+amount+";"+encodeURI(message).replaceAll("#","%23").replaceAll(";","%3B").replaceAll(":","%3A").replaceAll("/","%2F")
+
+      // TODO: Understand why these `replaceAll`s are used here.
+      message = encodeURI(message).replaceAll("#","%23").replaceAll(";","%3B").replaceAll(":","%3A").replaceAll("/","%2F");
+      const currency = localStorage.getItem("currency");
+
+      let qrValue = url+"/"+this.props.address+";"+amount+";"+message+";"+currency;
 
       return (
         <div>
