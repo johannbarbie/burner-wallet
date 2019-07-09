@@ -127,9 +127,10 @@ export default class App extends Component {
       vendors: {},
       ethprice: 0.00,
       hasUpdateOnce: false,
-      exchangeRate: {
-        USD: 0.00
-      }
+      possibleNewPrivateKey: '',
+      // NOTE: USD in exchangeRate is undefined, such that any result using this
+      // number becomes NaN intentionally until it's defined.
+      exchangeRate: {}
     };
     this.alertTimeout = null;
 
@@ -152,20 +153,33 @@ export default class App extends Component {
     this.poll = this.poll.bind(this)
     this.longPoll = this.longPoll.bind(this)
     this.queryExchangeWithNativeCurrency = this.queryExchangeWithNativeCurrency.bind(this)
+    this.setPossibleNewPrivateKey = this.setPossibleNewPrivateKey.bind(this)
   }
 
-  currencyDisplay = (amount)=>{
-    let { exchangeRate } = this.state
-    let locale = localStorage.getItem('i18nextLng')
-    let balance = (typeof amount !== 'undefined') ? Math.floor(amount * 100) / 100 : 0;
-    
-    let symbol = localStorage.getItem('currency') || Object.keys(exchangeRate)[0];
-    let rate = Object.values(exchangeRate)[0];
-    return new Intl.NumberFormat(locale, { style: 'currency', currency: symbol, maximumFractionDigits: 2 }).format(this.convertExchangeRate(rate, balance))
+  // NOTE: This function is for _displaying_ a currency value to a user. It
+  // adds a currency unit to the beginning or end of the number!
+  currencyDisplay = amount => {
+    // NOTE: For some reason, this function seems to take very long.
+    const { exchangeRate } = this.state
+    const locale = localStorage.getItem('i18nextLng') 
+    const symbol = localStorage.getItem('currency') || Object.keys(exchangeRate)[0];
+    const convertedAmount = this.convertExchangeRate(amount);
+
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: symbol,
+      maximumFractionDigits: 2 
+    }).format(convertedAmount)
   }
 
-  convertExchangeRate = (rate, amount)=>{
-    return (parseFloat(amount) * rate)
+  // NOTE: This function is for telling a computer the converted value between
+  // two currencies. Please do not use this function to display values to
+  // users but use `currencyDisplay`.
+  convertExchangeRate = amount => {
+    const { exchangeRate } = this.state
+    const rate = Object.values(exchangeRate)[0];
+
+    return amount * rate;
   }
 
   parseAndCleanPath(path){
@@ -290,6 +304,9 @@ export default class App extends Component {
     }
     interval = setInterval(this.poll,1500)
     intervalLong = setInterval(this.longPoll,45000)
+    // NOTE: We query once before starting the interval to define the value
+    // for the UI, as it needs to be readily available for the user.
+    this.queryExchangeWithNativeCurrency(CONFIG.CURRENCY.EXCHANGE_RATE_QUERY);
     exchangeRatesQueryTimer = setInterval(this.queryExchangeWithNativeCurrency, CONFIG.CURRENCY.EXCHANGE_RATE_QUERY)
     setTimeout(this.longPoll,150)
 
@@ -357,19 +374,32 @@ export default class App extends Component {
 
   queryExchangeWithNativeCurrency() {
     let currency = localStorage.getItem('currency') || CONFIG.CURRENCY.DEFAULT_CURRENCY
-    fetch(`https://min-api.cryptocompare.com/data/price?fsym=DAI&tsyms=${currency}`)
-      .then(response => response.json())
-      .then(response => {
-        this.setState({
-          'exchangeRate': response
+    if (currency === "USD") {
+      // NOTE: 1 DAI === 1 USD. Veritas in numeris! :)
+      this.setState({
+        exchangeRate: {
+          USD: 1
+        }
+      });
+    } else {
+      fetch(`https://min-api.cryptocompare.com/data/price?fsym=DAI&tsyms=${currency}`)
+        .then(response => response.json())
+        .then(response => {
+          this.setState({
+            'exchangeRate': response
+          })
         })
-      })
+    }
   }
 
   setPossibleNewPrivateKey(value){
-    this.setState({possibleNewPrivateKey:value},()=>{
-      this.dealWithPossibleNewPrivateKey()
+    this.setState({ possibleNewPrivateKey: value }, async () => {
+      await this.dealWithPossibleNewPrivateKey()
     })
+    // await this.dealWithPossibleNewPrivateKey()
+    // this.setState({possibleNewPrivateKey:value},()=>{
+      // this.dealWithPossibleNewPrivateKey()
+    // })
   }
   async dealWithPossibleNewPrivateKey(){
     //this happens as page load and you need to wait until
@@ -791,12 +821,16 @@ export default class App extends Component {
                   />
                 )
 
-                let selected = "xDai"
                 let extraTokens = ""
 
                 let defaultBalanceDisplay = (
                   <div>
-                    <Balance icon={pdai} selected={false} text={"PDAI"} amount={this.state.xdaiBalance} address={account} currencyDisplay={this.currencyDisplay} />
+                    <Balance
+                      icon={pdai}
+                      text={"PDAI"}
+                      amount={this.state.xdaiBalance}
+                      address={account}
+                      currencyDisplay={this.currencyDisplay} />
                   </div>
                 )
 
@@ -865,6 +899,22 @@ export default class App extends Component {
                   )
                 }
 
+                if (view.includes("loader_")) {
+                  const network = view.replace("loader_");
+                  return (
+                    <div>
+                      <div
+                        style={{zIndex:1,position:"relative",color:"#dddddd"}}>
+
+                        <NavCard
+                          title={"Sending..."}
+                          goBack={this.goBack.bind(this)} />
+                      </div>
+                      <Loader loaderImage={LOADERIMAGE} network={network} />
+                    </div>
+                  );
+                }
+
                 const sendByScan = (
                   <SendByScan
                     parseAndCleanPath={this.parseAndCleanPath.bind(this)}
@@ -887,11 +937,26 @@ export default class App extends Component {
                       <Card>
                         {extraTokens}
 
-                        <Balance icon={pdai} selected={selected} text={"PDAI"} amount={this.state.xdaiBalance} address={account} currencyDisplay={this.currencyDisplay}/>
+                        <Balance
+                          icon={pdai}
+                          text={"PDAI"} 
+                          amount={this.state.xdaiBalance}
+                          address={account}
+                          currencyDisplay={this.currencyDisplay}/>
 
-                        <Balance icon={dai} selected={selected} text={"DAI"} amount={this.state.daiBalance} address={account} currencyDisplay={this.currencyDisplay}/>
+                        <Balance
+                          icon={dai}
+                          text={"DAI"}
+                          amount={this.state.daiBalance}
+                          address={account}
+                          currencyDisplay={this.currencyDisplay}/>
 
-                        <Balance icon={eth} selected={selected} text={"ETH"} amount={parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice)} address={account} currencyDisplay={this.currencyDisplay}/>
+                        <Balance
+                          icon={eth}
+                          text={"ETH"}
+                          amount={parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice)}
+                          address={account}
+                          currencyDisplay={this.currencyDisplay}/>
 
                         {/* eslint-disable-next-line jsx-a11y/accessible-emoji */}
                         <Warning>💀 This product is currently in early alpha. Use at your own risk! 💀</Warning>
@@ -936,7 +1001,6 @@ export default class App extends Component {
                           <div>
                             <Balance
                               icon={eth}
-                              selected={selected}
                               text={"ETH"}
                               amount={parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice)}
                               currencyDisplay={this.currencyDisplay}
@@ -976,6 +1040,7 @@ export default class App extends Component {
                           currencyDisplay={this.currencyDisplay}
                           tokenSendV2={tokenSendV2.bind(this)}
                           metaAccount={this.state.metaAccount}
+                          setPossibleNewPrivateKey={this.setPossibleNewPrivateKey}
                         />
                       </Card>
                       <Bottom
@@ -1038,6 +1103,7 @@ export default class App extends Component {
                           changeView={this.changeView}
                           setReceipt={this.setReceipt}
                           changeAlert={this.changeAlert}
+                          convertExchangeRate={this.convertExchangeRate}
                           currencyDisplay={this.currencyDisplay}
                         />
                       </Card>
