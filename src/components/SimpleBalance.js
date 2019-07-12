@@ -55,7 +55,7 @@ export default ({ mainAmount, otherAmounts, currencyDisplay }) => {
     <>
       <StyledBalance>
         {parts.map(({ type, value }) => (
-          <Text.span className={type}>{value}</Text.span>
+          <Text.span key={value} className={type}>{value}</Text.span>
         ))}
         {otherAssetsTotal > 0 && (
           <Text className="otherAssets" italic fontSize={1} textAlign="center">
