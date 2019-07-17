@@ -6,6 +6,7 @@ import { withTranslation } from "react-i18next";
 function MoreButtons ({
   isVendor,
   changeView,
+  expertMode,
   t
 }) {
   let exchangeButton;

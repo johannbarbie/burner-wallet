@@ -32,6 +32,7 @@ class SendToAddress extends React.Component {
         convertCurrency,
         changeAlert,
         address,
+        t
       } = props;
 
 
@@ -54,7 +55,7 @@ class SendToAddress extends React.Component {
       // NOTE: In this case, we scan the RequestFunds QR code and if "currency"
       // is missing, we display a warning.
       } else if (((toAddress && amount) || message) && !currency) {
-        changeAlert({type: "warning", message: i18n.t("send_to_address.currency_error")});
+        changeAlert({type: "warning", message: t("send_to_address.currency_error")});
         // NOTE: We're setting currency equal to displayCurrency here to not
         // trigger the next condition, as that would set currencyWarning to
         // true again.

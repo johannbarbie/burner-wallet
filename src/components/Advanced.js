@@ -52,13 +52,8 @@ class Advanced extends React.Component {
   }
 
   render(){
-<<<<<<< HEAD
-    let {isVendor, balance, privateKey, changeAlert, changeView, setPossibleNewPrivateKey} = this.props
-    let { currency, expertMode } = this.state
-=======
     let {isVendor, balance, privateKey, changeAlert, changeView, setPossibleNewPrivateKey, t} = this.props
     let { currency } = this.state
->>>>>>> Fix Use react-i18next instead of i18n #173
 
     let url = window.location.protocol+"//"+window.location.hostname
     if(window.location.port&&window.location.port!==80&&window.location.port!==443){

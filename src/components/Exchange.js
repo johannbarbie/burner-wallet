@@ -890,7 +890,7 @@ class Exchange extends React.Component {
                   // NOTE: Technically we're not "depositing" but that was the
                   // only way I was able to make the loading bar show up...
                   daiToXdaiMode:"depositing",
-                  loaderBarStatusText: i18n.t('exchange.fast_exit_swap'),
+                  loaderBarStatusText: t('exchange.fast_exit_swap'),
                   loaderBarColor:"#3efff8",
                   loaderBarPercent:30,
                   loaderBarStartTime: Date.now(),
@@ -929,7 +929,7 @@ class Exchange extends React.Component {
                     console.log(rsp);
                     this.updatePendingExits(this.state.daiAddress, this.state.xdaiweb3);
                     this.setState({
-                      loaderBarStatusText: i18n.t('exchange.fast_exit_patience'),
+                      loaderBarStatusText: t('exchange.fast_exit_patience'),
                       loaderBarPercent:75,
                       loaderBarStartTime: Date.now(),
                       loaderBarClick:()=>{
@@ -939,7 +939,7 @@ class Exchange extends React.Component {
                     this.setState({ daiToXdaiAmount: "", daiToXdaiMode: false });
                     this.props.changeAlert({
                       type: "success",
-                      message: i18n.t("exchange.fast_exit_patience")
+                      message: t("exchange.fast_exit_patience")
                     });
                   }).catch(err => {
                     console.log(err);
@@ -966,7 +966,7 @@ class Exchange extends React.Component {
                       this.updatePendingExits(this.state.daiAddress, this.state.xdaiweb3);
                       this.props.changeAlert({
                         type: "success",
-                        message: i18n.t("exchange.fast_exit_patience")
+                        message: t("exchange.fast_exit_patience")
                       });
                       this.setState({
                         daiToXdaiAmount: "",

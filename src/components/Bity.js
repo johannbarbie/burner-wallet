@@ -359,7 +359,7 @@ class Bity extends Component {
 
   render() {
     const { fields } = this.state;
-    let { t } = this.props;
+    let { t, currencyDisplay } = this.props;
     return (
       <div>
         <Box mb={4}>

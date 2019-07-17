@@ -28,7 +28,7 @@
     "react-dom": "^16.6.0",
     "react-emoji-render": "^0.5.0",
     "react-file-reader-input": "^2.0.0",
-    "react-i18next": "^10.1.2",
+    "react-i18next": "^10.11.4",
     "react-linkify": "^0.2.2",
     "react-native-webview-messaging": "^1.2.3",
     "react-qr-reader": "^2.1.1",
