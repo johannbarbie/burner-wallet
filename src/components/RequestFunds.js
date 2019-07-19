@@ -46,7 +46,7 @@ class RequestFunds extends React.Component {
 
   render() {
     let { canRequest, message, amount, requested } = this.state;
-    let {currencyDisplay,view,buttonStyle,ERC20TOKEN,address, changeView, t} = this.props
+    let {currencyDisplay, view, buttonStyle, ERC20TOKEN, address, changeView, t} = this.props
     if(requested){
 
       let url = window.location.protocol+"//"+window.location.hostname

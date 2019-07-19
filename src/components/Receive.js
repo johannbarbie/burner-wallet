@@ -24,13 +24,14 @@ class Receive extends React.Component {
       changeAlert,
       changeView,
       currencyDisplay,
+      t
     } = this.props
 
     return (
       <div>
         <div>
           <CopyToClipboard text={address} onCopy={() => {
-            changeAlert({type: 'success', message: this.props.t('receive.address_copied')})
+            changeAlert({type: 'success', message: t('receive.address_copied')})
           }}>
             <Box>
               <Flex flexDirection={'column'} alignItems={'center'} p={3} border={1} borderColor={'grey'} borderRadius={1}>
@@ -64,7 +65,7 @@ class Receive extends React.Component {
         <div name="theVeryBottom" className="text-center bottom-text">
           <span style={{padding:10}}>
             <a href="#" style={{color:"#FFFFFF"}} onClick={()=>{this.props.goBack()}}>
-              <i className="fas fa-times"/> {this.props.t('cancel')}
+              <i className="fas fa-times"/> {t('cancel')}
             </a>
           </span>
         </div>

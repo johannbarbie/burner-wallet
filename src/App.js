@@ -121,7 +121,7 @@ export default class App extends Component {
       sendKey: "",
       alert: null,
       loadingTitle:'loading...',
-      title: this.props.t,
+      title: props.t('title'),
       extraHeadroom:0,
       balance: 0.00,
       vendors: {},
@@ -929,6 +929,22 @@ export default class App extends Component {
                         </div>
 
                       )
+                    }
+
+                    if (view.includes("loader_")) {
+                      const network = view.replace("loader_");
+                      return (
+                        <div>
+                          <div
+                            style={{zIndex:1,position:"relative",color:"#dddddd"}}>
+    
+                            <NavCard
+                              title={"Sending..."}
+                              goBack={this.goBack.bind(this)} />
+                          </div>
+                          <Loader loaderImage={LOADERIMAGE} network={network} />
+                        </div>
+                      );
                     }
 
                     const sendByScan = (

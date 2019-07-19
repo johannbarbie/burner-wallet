@@ -169,41 +169,41 @@ class SendToAddress extends React.Component {
 
     return (
       <div>
-          <div className="content row">
-            <div className="form-group w-100">
-              <div className="form-group w-100">
-                <label htmlFor="amount_input">{t('withdraw_from_private.from_address')}</label>
-                <Input
-                  width={1}
-                  type="text"
-                  placeholder="0x..."
-                  value={fromAddress} />
-              </div>
+        <Box mb={4}>
 
           <Flex justifyContent="space-between" alignItems="center" mb={3}>
             <Blockies seed={fromAddress} scale={10} />
             <Text fontSize={5} fontWeight="bold">{currencyDisplay(this.state.fromBalance)}</Text>
           </Flex>
 
-              <label htmlFor="amount_input">{t('withdraw_from_private.amount')}</label>
-              <div className="input-group">
-                <Input
-                  width={1}
-                  type="number"
-                  placeholder={currencyDisplay(0)}
-                  value={this.state.amount}
-                  onChange={event => this.updateState('amount', event.target.value)} />
-              </div>
-              {products}
-            </div>
-            <PrimaryButton
-              size={'large'}
+          <Field mb={3} label={t('withdraw_from_private.from_address')}>
+            <Input
               width={1}
-              disabled={!canWithdraw}
-              onClick={this.withdraw}>
-              {t('withdraw_from_private.withdraw')}
-            </PrimaryButton>
-          </div>
+              type="text"
+              placeholder="0x..."
+              spellcheck="false"
+              value={fromAddress}
+            />
+          </Field>
+
+          <Field mb={3} label={t('withdraw_from_private.amount')}>
+            <Input
+              width={1}
+              type="number"
+              placeholder={currencyDisplay(0)}
+              value={this.state.amount}
+              onChange={event => this.updateState('amount', event.target.value)}
+            />
+          </Field>
+          {products}
+        </Box>
+        <PrimaryButton
+          size={'large'}
+          width={1}
+          disabled={!canWithdraw}
+          onClick={this.withdraw}>
+          {t('withdraw_from_private.withdraw')}
+        </PrimaryButton>
       </div>
     )
   }

@@ -91,13 +91,13 @@ class Bity extends Component {
   }
 
   async componentDidMount() {
-    const { changeAlert } = this.props;
+    const { changeAlert, t } = this.props;
 
     this.refs.name.focus();
     try {
       await this.getMinAmount();
     } catch (err) {
-      changeAlert("warning", this.props.t("offramp.errors.bity_connection"));
+      changeAlert("warning", t("offramp.errors.bity_connection"));
     }
   }
 
@@ -121,7 +121,8 @@ class Bity extends Component {
       web3,
       changeView,
       setReceipt,
-      changeAlert
+      changeAlert,
+      t
     } = this.props;
     let { amount } = this.state.fields;
 
@@ -141,7 +142,7 @@ class Bity extends Component {
           address
         );
       } catch (err) {
-        changeAlert("warning", this.props.t("offramp.errors.bity_connection"));
+        changeAlert("warning", t("offramp.errors.bity_connection"));
         return;
       }
 
@@ -159,7 +160,7 @@ class Bity extends Component {
         } catch (err) {
           changeAlert(
             "warning",
-            this.props.t("offramp.errors.ethgasstation_connection")
+            t("offramp.errors.ethgasstation_connection")
           );
           return;
         }
@@ -204,7 +205,7 @@ class Bity extends Component {
         from: address,
         amount: amount.value,
         result: receipt,
-        message: this.props.t("offramp.success")
+        message: t("offramp.success")
       };
       setReceipt(receiptObj);
       changeView("receipt");
@@ -280,7 +281,7 @@ class Bity extends Component {
   }
 
   validate(input) {
-    const { address } = this.props;
+    const { address, t } = this.props;
     return () => {
       const { fields } = this.state;
       let newFields;
@@ -290,7 +291,7 @@ class Bity extends Component {
           name: {
             value: name,
             valid: name !== "",
-            message: name === "" ? this.props.t("offramp.required") : null
+            message: name === "" ? t("offramp.required") : null
           }
         });
       } else if (input === "IBAN") {
@@ -302,10 +303,10 @@ class Bity extends Component {
           valid = true;
         } else if (validReason === "country") {
           valid = false;
-          message = this.props.t("offramp.country_not_supported");
+          message = t("offramp.country_not_supported");
         } else {
           valid = false;
-          message = this.props.t("offramp.iban_incorrect");
+          message = t("offramp.iban_incorrect");
         }
         newFields = Object.assign(fields, {
           IBAN: {
@@ -334,12 +335,12 @@ class Bity extends Component {
         let valid, message;
         if (amount < min) {
           valid = false;
-          message = `${this.props.t(
+          message = `${t(
             "offramp.amount_too_small"
           )} $${MIN_AMOUNT_DOLLARS}.`;
         } else if (amount > max) {
           valid = false;
-          message = this.props.t("offramp.amount_too_big");
+          message = t("offramp.amount_too_big");
         } else {
           valid = true;
         }

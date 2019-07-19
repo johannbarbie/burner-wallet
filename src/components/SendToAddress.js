@@ -161,7 +161,7 @@ class SendToAddress extends React.Component {
 
   send = async () => {
     let { toAddress, amount } = this.state;
-    let { address, convertCurrency, currencyDisplay } = this.props
+    let { address, convertCurrency, currencyDisplay, t } = this.props
 
     const displayCurrency = getStoredValue("currency", address);
     amount = convertCurrency(amount, `USD/${displayCurrency}`);
@@ -238,7 +238,7 @@ class SendToAddress extends React.Component {
         })
       }
     }else{
-      this.props.changeAlert({type: 'warning', message: this.props.t('send_to_address.error')})
+      this.props.changeAlert({type: 'warning', message: t('send_to_address.error')})
     }
   };
 

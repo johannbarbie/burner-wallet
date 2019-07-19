@@ -3,12 +3,12 @@ import { Flex, Icon, Box } from "rimble-ui";
 import { BorderButton } from "./Buttons";
 import { withTranslation } from "react-i18next";
 
-function MoreButtons ({
+const MoreButtons = ({
   isVendor,
   changeView,
   expertMode,
   t
-}) {
+}) => {
   let exchangeButton;
 
   if (!isVendor) {

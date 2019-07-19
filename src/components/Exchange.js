@@ -74,13 +74,13 @@ class Exchange extends React.Component {
       xdaiMetaAccount: xdaiMetaAccount,
       daiToXdaiMode: false,
       ethToDaiMode: false,
-      loaderBarStatusText: this.props.t('loading'),
+      loaderBarStatusText: props.t('loading'),
       loaderBarStartTime:Date.now(),
       loaderBarPercent: 2,
       loaderBarColor: "#aaaaaa",
       gwei: 5,
       maxWithdrawlAmount: 0.00,
-      withdrawalExplanation: this.props.t('exchange.withdrawal_explanation'),
+      withdrawalExplanation: props.t('exchange.withdrawal_explanation'),
       gettingGas:false,
     }
 
@@ -723,9 +723,8 @@ class Exchange extends React.Component {
     }
   }
   render() {
-    const { address } = this.props;
+    const { address, t } = this.props;
     let {daiToXdaiMode,ethToDaiMode } = this.state
-    const { t } = this.props
 
     let ethCancelButton = <BorderButton className="btn-cancel" onClick={()=>{
           this.setState({ethToDaiAmount:"",ethToDaiMode:false})
@@ -748,7 +747,7 @@ class Exchange extends React.Component {
     let adjustedFontSize = Math.round((Math.min(document.documentElement.clientWidth,600)/600)*24)
     let adjustedTop = Math.round((Math.min(document.documentElement.clientWidth,600)/600)*-20)+9
 
-    let daiToXdaiDisplay =  this.props.t('loading')
+    let daiToXdaiDisplay =  t('loading')
 
     //console.log("daiToXdaiMode",daiToXdaiMode)
     if(daiToXdaiMode==="sending" || daiToXdaiMode==="withdrawing" || daiToXdaiMode==="depositing"){
@@ -821,7 +820,7 @@ class Exchange extends React.Component {
                   loaderBarPercent:0,
                   loaderBarStartTime: Date.now(),
                   loaderBarClick:()=>{
-                    alert(this.props.t('exchange.go_to_etherscan'))
+                    alert(t('exchange.go_to_etherscan'))
                   }
                 })
 
@@ -835,7 +834,7 @@ class Exchange extends React.Component {
                     loaderBarColor:"#4ab3f5",
                     loaderBarStatusText:"Waiting for bridge...",
                     loaderBarClick:()=>{
-                      alert(this.props.t('exchange.idk'))
+                      alert(t('exchange.idk'))
                     }
                   })
                 })
@@ -1011,7 +1010,7 @@ class Exchange extends React.Component {
       )
     }
 
-    let ethToDaiDisplay =  this.props.t('loading')
+    let ethToDaiDisplay =  t('loading')
 
     if(ethToDaiMode==="sending" || ethToDaiMode==="depositing" || ethToDaiMode==="withdrawing"){
       ethToDaiDisplay = (
@@ -1097,11 +1096,11 @@ class Exchange extends React.Component {
               this.setState({
                 ethToDaiMode:"depositing",
                 loaderBarColor:"#3efff8",
-                loaderBarStatusText: this.props.t('exchange.calculate_gas_price'),
+                loaderBarStatusText: t('exchange.calculate_gas_price'),
                 loaderBarPercent:0,
                 loaderBarStartTime: Date.now(),
                 loaderBarClick:()=>{
-                  alert(this.props.t('exchange.go_to_etherscan'))
+                  alert(t('exchange.go_to_etherscan'))
                 }
               })
 
@@ -1123,7 +1122,7 @@ class Exchange extends React.Component {
                     loaderBarColor:"#4ab3f5",
                     loaderBarStatusText:"Waiting for 🦄 exchange...",
                     loaderBarClick:()=>{
-                      alert(this.props.t('exchange.idk'))
+                      alert(t('exchange.idk'))
                     }
                   })
                 }
@@ -1207,11 +1206,11 @@ class Exchange extends React.Component {
               this.setState({
                 ethToDaiMode:"withdrawing",
                 loaderBarColor:"#3efff8",
-                loaderBarStatusText: this.props.t('exchange.calculate_gas_price'),
+                loaderBarStatusText: t('exchange.calculate_gas_price'),
                 loaderBarPercent:0,
                 loaderBarStartTime: Date.now(),
                 loaderBarClick:()=>{
-                  alert(this.props.t('exchange.go_to_etherscan'))
+                  alert(t('exchange.go_to_etherscan'))
                 }
               })
 
@@ -1350,7 +1349,7 @@ class Exchange extends React.Component {
                     loaderBarColor:"#42ceb2",
                     loaderBarStatusText:"Approving 🦄 exchange...",
                     loaderBarClick:()=>{
-                      alert(this.props.t('exchange.idk'))
+                      alert(t('exchange.idk'))
                     }
                   })
 
@@ -1368,7 +1367,7 @@ class Exchange extends React.Component {
                           loaderBarColor:"#4ab3f5",
                           loaderBarStatusText:"Sending funds to 🦄 Exchange...",
                           loaderBarClick:()=>{
-                            alert(this.props.t('exchange.idk'))
+                            alert(t('exchange.idk'))
                           }
                         })
 
@@ -1391,7 +1390,7 @@ class Exchange extends React.Component {
                     loaderBarColor:"#4ab3f5",
                     loaderBarStatusText:"Sending funds to 🦄 Exchange...",
                     loaderBarClick:()=>{
-                      alert(this.props.t('exchange.idk'))
+                      alert(t('exchange.idk'))
                     }
                   })
 
