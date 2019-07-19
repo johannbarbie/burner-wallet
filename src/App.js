@@ -62,7 +62,7 @@ let mainStyle = {
   mainColor:"white",
 }
 
-// let title = t('app_name')
+let title = 'Burner Wallet'
 let titleImage = (
   <span style={{paddingRight:20,paddingLeft:16}}><i className="fas fa-fire" /></span>
 )
@@ -101,6 +101,7 @@ const Warning = styled(Text).attrs(()=>({
 export default class App extends Component {
   constructor(props) {
 
+    console.log('Props ', props)
 
     let view = 'main'
     let cachedView = getStoredValue("view")
@@ -121,7 +122,7 @@ export default class App extends Component {
       sendKey: "",
       alert: null,
       loadingTitle:'loading...',
-      title: props.t('title'),
+      title,
       extraHeadroom:0,
       balance: 0.00,
       vendors: {},

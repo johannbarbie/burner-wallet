@@ -53,7 +53,7 @@ class Advanced extends React.Component {
 
   render(){
     let {isVendor, balance, privateKey, changeAlert, changeView, setPossibleNewPrivateKey, t} = this.props
-    let { currency } = this.state
+    let { currency, expertMode } = this.state
 
     let url = window.location.protocol+"//"+window.location.hostname
     if(window.location.port&&window.location.port!==80&&window.location.port!==443){
@@ -162,7 +162,7 @@ class Advanced extends React.Component {
     return (
       <div style={{marginTop:20}}>
         <Flex py={3} alignItems='center' justifyContent='space-between'>
-          <Text>{i18n.t('currency.label')}</Text>
+          <Text>{t('currency.label')}</Text>
           <Select items={CURRENCY.CURRENCY_LIST} onChange={this.updateCurrency} value={currency}/>
         </Flex>
         <Flex py={3} alignItems='center' justifyContent='space-between'>
@@ -178,14 +178,14 @@ class Advanced extends React.Component {
             <a href={LINKS.CODE} style={{color:"#FFFFFF"}} target="_blank" rel="noopener noreferrer">
               <BorderButton width={1}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                  <i className="fas fa-code"/> {i18n.t('code')}
+                  <i className="fas fa-code"/> {t('code')}
                 </Scaler>
               </BorderButton>
             </a>
             <a href={LINKS.ABOUT} style={{color:"#FFFFFF"}} target="_blank" rel="noopener noreferrer">
               <BorderButton width={1}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                  <i className="fas fa-info"/> {i18n.t('about')}
+                  <i className="fas fa-info"/> {t('about')}
                 </Scaler>
               </BorderButton>
             </a>
@@ -241,18 +241,19 @@ class Advanced extends React.Component {
         {inputSeedRow}
 
         {isVendor &&
-          <div>
-            <div className="content ops row settings-row" style={{marginBottom:10}}>
-              <PrimaryButton width={1} onClick={()=>{
-                this.props.changeView("exchange")
-              }}>
-                <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                  <i className="fas fa-key"/> {"Exchange"}
-                </Scaler>
-              </PrimaryButton>
-            </div>
+        <div>
+          <div className="content ops row settings-row" style={{marginBottom:10}}>
+            <PrimaryButton width={1} onClick={()=>{
+              this.props.changeView("exchange")
+            }}>
+              <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
+                <i className="fas fa-key"/> {"Exchange"}
+              </Scaler>
+            </PrimaryButton>
           </div>
+        </div>
         }
+
       </div>
     )
   }
