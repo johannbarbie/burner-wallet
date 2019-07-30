@@ -5,7 +5,7 @@ import { Translation } from "react-i18next";
 export default ({ mainStyle, burnWallet, goBack }) => {
   return (
     <Translation>
-      {(t, { i18n }) => (
+      {(t) => (
         // eslint-disable-next-line no-unused-expressions
         <>
           <div

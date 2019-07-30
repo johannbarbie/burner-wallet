@@ -970,12 +970,34 @@ export default class App extends Component {
                           <Card>
                             {extraTokens}
 
-                            <Balance icon={pdai} selected={selected} text={"PDAI"} amount={this.state.xdaiBalance} address={account} currencyDisplay={this.currencyDisplay}/>
+                            {expertMode ? (<>
+								<Balance
+								icon={pdai}
+								text={"PDAI"}
+								amount={this.state.xdaiBalance}
+								address={account}
+								currencyDisplay={this.currencyDisplay}/>
 
-                            <Balance icon={dai} selected={selected} text={"DAI"} amount={this.state.daiBalance} address={account} currencyDisplay={this.currencyDisplay}/>
+								<Balance
+								icon={dai}
+								text={"DAI"}
+								amount={this.state.daiBalance}
+								address={account}
+								currencyDisplay={this.currencyDisplay}/>
 
-                            <Balance icon={eth} selected={selected} text={"ETH"} amount={parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice)} address={account} currencyDisplay={this.currencyDisplay}/>
-
+								<Balance
+								icon={eth}
+								text={"ETH"}
+								amount={parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice)}
+								tokenAmount={this.state.ethBalance}
+								address={account}
+								currencyDisplay={this.currencyDisplay}/>
+								</>) : (
+								<SimpleBalance
+									mainAmount={this.state.xdaiBalance}
+									otherAmounts={{DAI: this.state.daiBalance, ETH: parseFloat(this.state.ethBalance) * parseFloat(this.state.ethprice)}}
+									currencyDisplay={this.currencyDisplay} />
+								)}
                             {/* eslint-disable-next-line jsx-a11y/accessible-emoji */}
                             <Warning>💀 This product is currently in early alpha. Use at your own risk! 💀</Warning>
 
