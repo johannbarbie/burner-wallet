@@ -62,7 +62,7 @@ let mainStyle = {
   mainColor:"white",
 }
 
-let title = 'Burner Wallet'
+const title = i18n.t('app_name')
 let titleImage = (
   <span style={{paddingRight:20,paddingLeft:16}}><i className="fas fa-fire" /></span>
 )
