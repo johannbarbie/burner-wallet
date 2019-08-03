@@ -1,19 +1,19 @@
 import React from "react";
 import { Flex, Icon, Box } from "rimble-ui";
-import i18next from "i18next";
+import { withTranslation} from 'react-i18next';
 import { PrimaryButton } from "./Buttons";
 
-export default ({
+const MainCard = ({
   changeView,
-}) => {
-  let sendButtons = (
+  t
+}) => (
     <Box>
       <Flex mx={-2}>
         <Box width={[1, 1/2, 1/2]} m={2}>
           <PrimaryButton width={1} onClick={() => changeView("receive")}>
             <Flex alignItems="center">
               <Icon name="CenterFocusWeak" mr={2} />
-              {i18next.t("main_card.receive")}
+              {t("main_card.receive")}
             </Flex>
           </PrimaryButton>
         </Box>
@@ -21,7 +21,7 @@ export default ({
           <PrimaryButton width={1} onClick={() => changeView("send_to_address")}>
             <Flex alignItems="center">
               <Icon name="Send" mr={2} />
-              {i18next.t("main_card.send")}
+              {t("main_card.send")}
             </Flex>
           </PrimaryButton>
         </Box>
@@ -29,6 +29,4 @@ export default ({
     </Box>
   );
 
-
-  return sendButtons
-};
+export default withTranslation()(MainCard);

@@ -3,7 +3,7 @@ import QrReader from "react-qr-reader";
 import FileReaderInput from 'react-file-reader-input';
 import qrimage from '../assets/qrcode.png';
 import RNMessageChannel from 'react-native-webview-messaging';
-import i18n from "../i18n";
+import { withTranslation } from 'react-i18next';
 import Web3 from 'web3';
 
 function base64ToBitmap(base64) {
@@ -198,7 +198,8 @@ class SendByScan extends Component {
   }
   render() {
 
-    let displayedImage = ""
+	let displayedImage = ""
+	const { t } = this.props;
     if(this.state.imageData){
       displayedImage = (
         <img style={{position:"absolute",left:0,top:0,maxWidth:"100%",opacity:0.7}} src={this.state.imageData} alt="qr" />
@@ -230,7 +231,7 @@ class SendByScan extends Component {
             <div style={{marginBottom:20}}><i className="fas fa-ban"></i></div>
           </div>
           <div style={{textAlign:"center",paddingTop:"25%"}}>
-            <div>{i18n.t('send_by_scan.try_again')}</div>
+            <div>{t('send_by_scan.try_again')}</div>
 
           </div>
           <div style={{textAlign:"center",padding:"10%",paddingTop:"15%",fontSize:16}}>
@@ -264,11 +265,11 @@ class SendByScan extends Component {
           </div>
           <div style={{textAlign:"center",paddingTop:"35%"}}>
 
-            <div>{i18n.t('send_by_scan.capture')}</div>
+            <div>{t('send_by_scan.capture')}</div>
               <div className="main-card card w-100" style={{backgroundColor:"#000000"}}>
                 <div className="content ops row" style={{paddingLeft:"12%",paddingRight:"12%",paddingTop:10}}>
                     <button className="btn btn-large w-100" style={{backgroundColor:this.props.mainStyle.mainColor}}>
-                        <i className="fas fa-camera"  /> {i18n.t('send_by_scan.take_photo')}
+                        <i className="fas fa-camera"  /> {t('send_by_scan.take_photo')}
                     </button>
                 </div>
               </div>
@@ -300,4 +301,4 @@ class SendByScan extends Component {
   }
 }
 
-export default SendByScan;
+export default withTranslation()(SendByScan);

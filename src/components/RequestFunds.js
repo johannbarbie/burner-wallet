@@ -1,6 +1,6 @@
 import React from 'react';
 import {CopyToClipboard} from "react-copy-to-clipboard";
-import i18n from '../i18n';
+import { withTranslation } from 'react-i18next';
 import RecentTransactions from './RecentTransactions';
 import {
   Flex,
@@ -12,7 +12,7 @@ import {
 import { PrimaryButton } from "./Buttons";
 import { getStoredValue } from "../services/localStorage";
 
-export default class RequestFunds extends React.Component {
+class RequestFunds extends React.Component {
 
   constructor(props) {
     super(props);
@@ -51,7 +51,8 @@ export default class RequestFunds extends React.Component {
       view,
       buttonStyle,
       address,
-      changeView,
+	  changeView,
+	  t
     } = this.props
     if(requested){
 
@@ -109,7 +110,7 @@ export default class RequestFunds extends React.Component {
     }else{
       return (
         <div>
-          <Field label={i18n.t('request_funds.amount')}>
+          <Field label={t('request_funds.amount')}>
             <Input
               type="number"
               width={1}
@@ -119,7 +120,7 @@ export default class RequestFunds extends React.Component {
             />
           </Field>
 
-          <Field label={i18n.t('request_funds.item_message')}>
+          <Field label={t('request_funds.item_message')}>
             <Input
               type="text"
               width={1}
@@ -135,7 +136,7 @@ export default class RequestFunds extends React.Component {
             disabled={(canRequest ? false : true)}
             onClick={this.request}
           >
-            {i18n.t('request_funds.button')}
+            {t('request_funds.button')}
           </PrimaryButton>
         </div>
       )
@@ -143,3 +144,5 @@ export default class RequestFunds extends React.Component {
 
   }
 }
+
+export default withTranslation()(RequestFunds);
