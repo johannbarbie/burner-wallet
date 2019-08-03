@@ -2,7 +2,6 @@ import React from 'react';
 import Web3 from 'web3';
 import { Scaler } from "dapparatus";
 import Blockies from 'react-blockies';
-import i18n from '../i18n';
 import { withTranslation } from 'react-i18next';
 import {
   Box,
