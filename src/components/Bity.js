@@ -370,15 +370,9 @@ class Bity extends Component {
             <Trans i18nKey="offramp.heading">
 				Transfer your ether directly to your bank account with just one
 				click using{" "}
-				<a
-				href="https://bity.com/"
-				target="_blank"
-				rel="noopener noreferrer"
-				>
-				bity.com
-				</a>
-				, the secure swiss crypto gateway. No KYC is required within
-				bity.com's 5000 CHF (~4500 EUR) annual limit.
+				<a href="https://bity.com/" target="_blank" rel="noopener noreferrer">bity.com</a>
+				, the secure swiss crypto gateway. No KYC is required within bity.com's 
+				5000 CHF (~4500 EUR) annual limit.
 			</Trans>
           </P>
           <Field mb={3} label={t("offramp.form.owner")}>

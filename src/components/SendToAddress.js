@@ -31,7 +31,8 @@ class SendToAddress extends React.Component {
         },
         convertCurrency,
         changeAlert,
-        address,
+		address,
+		t
       } = props;
 
 
@@ -54,7 +55,7 @@ class SendToAddress extends React.Component {
       // NOTE: In this case, we scan the RequestFunds QR code and if "currency"
       // is missing, we display a warning.
       } else if (((toAddress && amount) || message) && !currency) {
-        changeAlert({type: "warning", message: this.props.t("send_to_address.currency_error")});
+        changeAlert({type: "warning", message: t("send_to_address.currency_error")});
         // NOTE: We're setting currency equal to displayCurrency here to not
         // trigger the next condition, as that would set currencyWarning to
         // true again.
@@ -160,7 +161,7 @@ class SendToAddress extends React.Component {
 
   send = async () => {
     let { toAddress, amount } = this.state;
-    let { address, convertCurrency, currencyDisplay } = this.props
+    let { address, convertCurrency, currencyDisplay, t } = this.props
 
     const displayCurrency = getStoredValue("currency", address);
     amount = convertCurrency(amount, `USD/${displayCurrency}`);
@@ -237,11 +238,11 @@ class SendToAddress extends React.Component {
         })
       }
     }else{
-      this.props.changeAlert({type: 'warning', message: this.props.t('send_to_address.error')})
+      this.props.changeAlert({type: 'warning', message: t('send_to_address.error')})
     }
   };
 
-  onKeyDown = e => {
+  onKeyDown(e) {
       // backspace, delete, tab, escape, enter, comma and period
 	  const keyCodeArray = [46, 8, 9, 27, 13, 110, 188, 190];
 	  if (keyCodeArray.indexOf(e.keyCode) !== -1) {

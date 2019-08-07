@@ -74,13 +74,13 @@ class Exchange extends React.Component {
       xdaiMetaAccount: xdaiMetaAccount,
       daiToXdaiMode: false,
       ethToDaiMode: false,
-      loaderBarStatusText: this.props.t('loading'),
+      loaderBarStatusText: props.t('loading'),
       loaderBarStartTime:Date.now(),
       loaderBarPercent: 2,
       loaderBarColor: "#aaaaaa",
       gwei: 5,
       maxWithdrawlAmount: 0.00,
-      withdrawalExplanation: this.props.t('exchange.withdrawal_explanation'),
+      withdrawalExplanation: props.t('exchange.withdrawal_explanation'),
       gettingGas:false,
     }
 

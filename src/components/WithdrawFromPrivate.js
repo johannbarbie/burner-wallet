@@ -71,7 +71,7 @@ class WithdrawFromPrivate extends React.Component {
 
   withdraw = async () => {
     let { fromAddress, amount, metaAccount } = this.state
-    const { tokenSendV2, address, web3, xdaiweb3, daiTokenAddr} = this.props
+    const { tokenSendV2, address, web3, xdaiweb3, daiTokenAddr, t } = this.props
 
     if(this.state.canWithdraw){
         console.log("SWITCH TO LOADER VIEW...")
@@ -110,7 +110,7 @@ class WithdrawFromPrivate extends React.Component {
           message: 'Withdrawn!'
         });
     }else{
-      this.props.changeAlert({type: 'warning', message: this.props.t('withdraw_from_private.error')})
+      this.props.changeAlert({type: 'warning', message: t('withdraw_from_private.error')})
     }
   };
 
