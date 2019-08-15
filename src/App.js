@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Tx, Input, Output, Util } from 'leap-core';
+import { Tx, Input, Output, Util, helpers } from 'leap-core';
 import { Dapparatus, Transactions, Gas } from "dapparatus";
 import { equal, bi } from 'jsbi-utils';
 import Web3 from 'web3';
@@ -1569,13 +1569,9 @@ async function tokenSend(to, value, gasLimit, txData, cb) {
 }
 
 async function consolidateUTXOs(utxos, plasma, web3, privateKey) {
-  const { address, color } = utxos[0].output;
-  const inputs = utxos.map(({ outpoint }) => new Input(outpoint));
-  const amount = utxos
-    .reduce((acc, { output: { value } }) => acc.iadd(new BN(value)), new BN(0))
-    .toString(10);
-  const outputs = [new Output(amount, address.toLowerCase(), color)];
-  const transaction = Tx.transfer(inputs, outputs);
+  // consolidateUTXOs returns an array of consolidation transactions.
+  // Since we limit utxos to 15 elements, we can just pick the first element.
+  const transaction = helpers.consolidateUTXOs(utxos)[0];
 
   const signedTx = privateKey
     ? await transaction.signAll(privateKey)
