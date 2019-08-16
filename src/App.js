@@ -465,7 +465,7 @@ export default class App extends Component {
       //}, false)
     }
     if (prevState.account !== account){
-      const currency = getStoredValue('currency') || CONFIG.CURRENCY.DEFAULT_CURRENCY;
+      const currency =  getStoredValue('currency', account) || getStoredValue('currency') || CONFIG.CURRENCY.DEFAULT_CURRENCY;
       storeValues({currency}, account);
       eraseStoredValue('currency');
     }
