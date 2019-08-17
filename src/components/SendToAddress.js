@@ -242,18 +242,6 @@ class SendToAddress extends React.Component {
     }
   };
 
-  onKeyDown(e) {
-      // backspace, delete, tab, escape, enter, comma and period
-	  const keyCodeArray = [46, 8, 9, 27, 13, 110, 188, 190];
-	  if (keyCodeArray.indexOf(e.keyCode) !== -1) {
-		return;
-	  }
-	  // block any non-number
-	  if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-		e.preventDefault();
-	  }
-  }
-
   render() {
     let {
       canSend,
@@ -282,12 +270,11 @@ class SendToAddress extends React.Component {
     let amountInputDisplay = (
       <Input
         width={1}
-        type="text"
+        type="number"
         placeholder={this.props.currencyDisplay(0)}
         value={this.state.amount}
         ref={(input) => { this.amountInput = input; }}
 		onChange={event => this.updateState('amount', event.target.value)}
-		onKeyDown={this.onKeyDown}
       />
     )
     if(this.props.scannerState&&this.props.scannerState.daiposOrderId){
