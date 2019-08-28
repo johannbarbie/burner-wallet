@@ -327,12 +327,6 @@ export default class App extends Component {
         }
       }
     }
-    if (this.state.account){
-      let nativeCurrency = getStoredValue('currency', this.state.account)
-      if (nativeCurrency === null) {
-        storeValues({currency: CONFIG.CURRENCY.DEFAULT_CURRENCY}, this.state.account)
-      }
-    }
 
     interval = setInterval(this.poll,1500)
     intervalLong = setInterval(this.longPoll,45000)
@@ -471,11 +465,9 @@ export default class App extends Component {
       //}, false)
     }
     if (prevState.account !== account){
-      const currency = getStoredValue('currency');
-      if (currency){
-        storeValues({currency}, account);
-        eraseStoredValue('currency');
-      }
+      const currency =  getStoredValue('currency', account) || getStoredValue('currency') || CONFIG.CURRENCY.DEFAULT_CURRENCY;
+      storeValues({currency}, account);
+      eraseStoredValue('currency');
     }
   };
   checkNetwork() {
