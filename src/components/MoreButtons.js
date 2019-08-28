@@ -1,12 +1,13 @@
 import React from "react";
-import i18n from "../i18n";
+import { withTranslation } from 'react-i18next';
 import { Flex, Icon, Box } from "rimble-ui";
 import { BorderButton } from "./Buttons";
 
-export default ({
+const MoreButtons = ({
   isVendor,
   changeView,
-  expertMode
+  expertMode,
+  t
 }) => {
   let exchangeButton;
 
@@ -20,7 +21,7 @@ export default ({
       >
         <Flex mx={-2} alignItems="center">
           <Icon name="Shuffle" mr={2} />
-          {i18n.t("more_buttons.exchange")}
+          {t("more_buttons.exchange")}
         </Flex>
       </BorderButton>
     );
@@ -51,7 +52,7 @@ export default ({
         >
           <Flex alignItems="center">
             <Icon name="AttachMoney" mr={2} />
-            {i18n.t("more_buttons.request")}
+            {t("more_buttons.request")}
           </Flex>
         </BorderButton>
       </Box>
@@ -59,3 +60,5 @@ export default ({
     </Flex>
   );
 };
+
+export default withTranslation()(MoreButtons)

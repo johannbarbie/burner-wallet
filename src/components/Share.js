@@ -1,6 +1,6 @@
 import React from 'react';
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import i18n from '../i18n';
+import { withTranslation } from 'react-i18next';
 import {
   Flex,
   Box,
@@ -8,18 +8,19 @@ import {
   QR as QRCode
 } from 'rimble-ui'
 
-export default class Receive extends React.Component {
+class Share extends React.Component {
 
   render() {
     let {
       changeAlert,
-      url
+	  url,
+	  t
     } = this.props
 
     return (
       <div>
         <CopyToClipboard text={url} onCopy={() => {
-          changeAlert({type: 'success', message: i18n.t('share.copied')})
+          changeAlert({type: 'success', message: t('share.copied')})
         }}>
           <Box>
             <Flex flexDirection={'column'} alignItems={'center'} p={3} border={1} borderColor={'grey'} borderRadius={1}>
@@ -34,3 +35,5 @@ export default class Receive extends React.Component {
     )
   }
 }
+
+export default withTranslation()(Share);

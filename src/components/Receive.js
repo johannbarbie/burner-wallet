@@ -3,7 +3,7 @@
 import React from 'react';
 import {CopyToClipboard} from "react-copy-to-clipboard";
 import RecentTransactions from './RecentTransactions';
-import i18n from '../i18n';
+import { withTranslation, Trans } from 'react-i18next';
 import getConfig from "../config";
 import {
   Flex,
@@ -14,7 +14,7 @@ import {
 
 const CONFIG = getConfig();
 
-export default class Receive extends React.Component {
+class Receive extends React.Component {
 
   render() {
     let {
@@ -23,14 +23,15 @@ export default class Receive extends React.Component {
       address,
       changeAlert,
       changeView,
-      currencyDisplay,
+	  currencyDisplay,
+	  t
     } = this.props
 
     return (
       <div>
         <div>
           <CopyToClipboard text={address} onCopy={() => {
-            changeAlert({type: 'success', message: i18n.t('receive.address_copied')})
+            changeAlert({type: 'success', message: t('receive.address_copied')})
           }}>
             <Box>
               <Flex flexDirection={'column'} alignItems={'center'} p={3} border={1} borderColor={'grey'} borderRadius={1}>
@@ -42,9 +43,11 @@ export default class Receive extends React.Component {
             </Box>
           </CopyToClipboard>
           <div style={{width:"100%",textAlign:'center',padding:20}}>
-            <a href={CONFIG.SIDECHAIN.EXPLORER.URL + "address/" + address} target="_blank" rel="noopener noreferrer">
-              View on {CONFIG.SIDECHAIN.EXPLORER.NAME}
-            </a>
+			<Trans i18nKey="receive.view_link">
+				<a href={CONFIG.SIDECHAIN.EXPLORER.URL + "address/" + address} target="_blank" rel="noopener noreferrer">
+					View on {CONFIG.SIDECHAIN.EXPLORER.NAME}
+				</a>
+			</Trans>
           </div>
 
           <RecentTransactions
@@ -62,7 +65,7 @@ export default class Receive extends React.Component {
         <div name="theVeryBottom" className="text-center bottom-text">
           <span style={{padding:10}}>
             <a href="#" style={{color:"#FFFFFF"}} onClick={()=>{this.props.goBack()}}>
-              <i className="fas fa-times"/> {i18n.t('cancel')}
+              <i className="fas fa-times"/> {t('cancel')}
             </a>
           </span>
         </div>
@@ -70,3 +73,5 @@ export default class Receive extends React.Component {
     )
   }
 }
+
+export default withTranslation()(Receive);

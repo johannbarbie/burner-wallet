@@ -3,7 +3,7 @@ import cookie from 'react-cookies'
 import {CopyToClipboard} from "react-copy-to-clipboard";
 import Blockies from 'react-blockies';
 import { scroller } from 'react-scroll'
-import i18n from '../i18n';
+import { withTranslation } from 'react-i18next';
 import queryString from 'query-string';
 import {
   Box,
@@ -14,7 +14,7 @@ import { PrimaryButton, BorderButton } from "./Buttons";
 import InputInfo from "./InputInfo";
 import { getStoredValue } from "../services/localStorage";
 
-export default class SendToAddress extends React.Component {
+class SendToAddress extends React.Component {
 
   constructor(props) {
     super(props);
@@ -31,7 +31,8 @@ export default class SendToAddress extends React.Component {
         },
         convertCurrency,
         changeAlert,
-        address,
+		address,
+		t
       } = props;
 
 
@@ -54,7 +55,7 @@ export default class SendToAddress extends React.Component {
       // NOTE: In this case, we scan the RequestFunds QR code and if "currency"
       // is missing, we display a warning.
       } else if (((toAddress && amount) || message) && !currency) {
-        changeAlert({type: "warning", message: i18n.t("send_to_address.currency_error")});
+        changeAlert({type: "warning", message: t("send_to_address.currency_error")});
         // NOTE: We're setting currency equal to displayCurrency here to not
         // trigger the next condition, as that would set currencyWarning to
         // true again.
@@ -160,7 +161,7 @@ export default class SendToAddress extends React.Component {
 
   send = async () => {
     let { toAddress, amount } = this.state;
-    let { address, convertCurrency, currencyDisplay } = this.props
+    let { address, convertCurrency, currencyDisplay, t } = this.props
 
     const displayCurrency = getStoredValue("currency", address);
     amount = convertCurrency(amount, `USD/${displayCurrency}`);
@@ -237,7 +238,7 @@ export default class SendToAddress extends React.Component {
         })
       }
     }else{
-      this.props.changeAlert({type: 'warning', message: i18n.t('send_to_address.error')})
+      this.props.changeAlert({type: 'warning', message: t('send_to_address.error')})
     }
   };
 
@@ -245,7 +246,8 @@ export default class SendToAddress extends React.Component {
     let {
       canSend,
       toAddress
-    } = this.state;
+	} = this.state;
+	let { t } = this.props;
 
     /*let sendMessage = ""
     if(this.state.message){
@@ -272,7 +274,7 @@ export default class SendToAddress extends React.Component {
         placeholder={this.props.currencyDisplay(0)}
         value={this.state.amount}
         ref={(input) => { this.amountInput = input; }}
-        onChange={event => this.updateState('amount', event.target.value)}
+		onChange={event => this.updateState('amount', event.target.value)}
       />
     )
     if(this.props.scannerState&&this.props.scannerState.daiposOrderId){
@@ -282,9 +284,9 @@ export default class SendToAddress extends React.Component {
           type="number"
           readOnly
           placeholder={this.props.currencyDisplay(0)}
-          value={this.state.amount}
+          value={this.commaFormatted(this.state.amount)}
           ref={(input) => { this.amountInput = input; }}
-          onChange={event => this.updateState('amount', event.target.value)}
+		  onChange={event => this.updateState('amount', event.target.value)}
         />
       )
     }
@@ -292,7 +294,7 @@ export default class SendToAddress extends React.Component {
     return (
       <div>
         <Box mb={4}>
-          <Field mb={3} label={i18n.t('send_to_address.to_address')}>
+          <Field mb={3} label={t('send_to_address.to_address')}>
             <Input
               width={1}
               type="text"
@@ -316,7 +318,7 @@ export default class SendToAddress extends React.Component {
             </CopyToClipboard>
           }</div>
 
-          <Field mb={3} label={i18n.t("send_to_address.send_amount")}>
+          <Field mb={3} label={t("send_to_address.send_amount")}>
             {amountInputDisplay}
             {/* TODO: i18n this with merging PR #195 */
             this.state.currencyWarning ? (
@@ -355,3 +357,5 @@ export default class SendToAddress extends React.Component {
     )
   }
 }
+
+export default withTranslation()(SendToAddress);

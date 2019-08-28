@@ -1,7 +1,7 @@
 import React from 'react';
 import { Scaler } from "dapparatus";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import i18n from '../i18n';
+import { withTranslation } from 'react-i18next';
 import {
   Input,
   QR as QRCode,
@@ -16,7 +16,7 @@ import { getStoredValue, storeValues } from "../services/localStorage";
 
 const { CURRENCY, LINKS } = getConfig()
 
-export default class Advanced extends React.Component {
+class Advanced extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -52,7 +52,7 @@ export default class Advanced extends React.Component {
   }
 
   render(){
-    let {isVendor, balance, privateKey, changeAlert, changeView, setPossibleNewPrivateKey} = this.props
+    let {isVendor, balance, privateKey, changeAlert, changeView, setPossibleNewPrivateKey, t} = this.props
     let { currency, expertMode } = this.state
 
     let url = window.location.protocol+"//"+window.location.hostname
@@ -112,7 +112,7 @@ export default class Advanced extends React.Component {
             changeAlert({type: 'warning', message: 'Invalid private key.'})
           }
         }}>
-          <i className="fas fa-plus-square"/> {i18n.t('create')}
+          <i className="fas fa-plus-square"/> {t('create')}
         </PrimaryButton>
       </div>
     )
@@ -153,7 +153,7 @@ export default class Advanced extends React.Component {
           }
         }}>
           <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-            <i className="fas fa-plus-square"/> {i18n.t('create')}
+            <i className="fas fa-plus-square"/> {t('create')}
           </Scaler>
         </PrimaryButton>
       </div>
@@ -162,7 +162,7 @@ export default class Advanced extends React.Component {
     return (
       <div style={{marginTop:20}}>
         <Flex py={3} alignItems='center' justifyContent='space-between'>
-          <Text>{i18n.t('currency.label')}</Text>
+          <Text>{t('currency.label')}</Text>
           <Select items={CURRENCY.CURRENCY_LIST} onChange={this.updateCurrency} value={currency}/>
         </Flex>
         <Flex py={3} alignItems='center' justifyContent='space-between'>
@@ -178,14 +178,14 @@ export default class Advanced extends React.Component {
             <a href={LINKS.CODE} style={{color:"#FFFFFF"}} target="_blank" rel="noopener noreferrer">
               <BorderButton width={1}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                  <i className="fas fa-code"/> {i18n.t('code')}
+                  <i className="fas fa-code"/> {t('code')}
                 </Scaler>
               </BorderButton>
             </a>
             <a href={LINKS.ABOUT} style={{color:"#FFFFFF"}} target="_blank" rel="noopener noreferrer">
               <BorderButton width={1}>
                 <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                  <i className="fas fa-info"/> {i18n.t('about')}
+                  <i className="fas fa-info"/> {t('about')}
                 </Scaler>
               </BorderButton>
             </a>
@@ -203,12 +203,12 @@ export default class Advanced extends React.Component {
             <PrimaryButton width={1} onClick={()=>{
               this.setState({privateKeyQr:!this.state.privateKeyQr})
             }}>
-              <i className="fas fa-key"/> {i18n.t('show')}
+              <i className="fas fa-key"/> {t('show')}
             </PrimaryButton>
 
             <CopyToClipboard text={privateKey}>
               <PrimaryButton width={1} onClick={() => changeAlert({type: 'success', message: 'Private Key copied to clipboard'})}>
-                <i className="fas fa-key"/> {i18n.t('copy')}
+                <i className="fas fa-key"/> {t('copy')}
               </PrimaryButton>
             </CopyToClipboard>
 
@@ -226,7 +226,7 @@ export default class Advanced extends React.Component {
               changeView('burn-wallet')
             }}>
               <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-                <i className="fas fa-fire"/> {i18n.t('burn')}
+                <i className="fas fa-fire"/> {t('burn')}
               </Scaler>
             </PrimaryButton>
           </div>
@@ -258,3 +258,5 @@ export default class Advanced extends React.Component {
     )
   }
 }
+
+export default withTranslation()(Advanced);

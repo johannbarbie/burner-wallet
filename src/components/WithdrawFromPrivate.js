@@ -2,7 +2,7 @@ import React from 'react';
 import Web3 from 'web3';
 import { Scaler } from "dapparatus";
 import Blockies from 'react-blockies';
-import i18n from '../i18n';
+import { withTranslation } from 'react-i18next';
 import {
   Box,
   Field,
@@ -16,7 +16,7 @@ import { PrimaryButton } from "./Buttons";
 // TODO: Can this be state of SendToAddress?
 let pollInterval
 
-export default class SendToAddress extends React.Component {
+class WithdrawFromPrivate extends React.Component {
 
   constructor(props) {
     super(props);
@@ -71,7 +71,7 @@ export default class SendToAddress extends React.Component {
 
   withdraw = async () => {
     let { fromAddress, amount, metaAccount } = this.state
-    const { tokenSendV2, address, web3, xdaiweb3, daiTokenAddr} = this.props
+    const { tokenSendV2, address, web3, xdaiweb3, daiTokenAddr, t } = this.props
 
     if(this.state.canWithdraw){
         console.log("SWITCH TO LOADER VIEW...")
@@ -110,13 +110,13 @@ export default class SendToAddress extends React.Component {
           message: 'Withdrawn!'
         });
     }else{
-      this.props.changeAlert({type: 'warning', message: i18n.t('withdraw_from_private.error')})
+      this.props.changeAlert({type: 'warning', message: t('withdraw_from_private.error')})
     }
   };
 
   render() {
     let { canWithdraw, fromAddress } = this.state;
-    let { currencyDisplay } = this.props;
+    let { currencyDisplay, t } = this.props;
 
     let products = []
     for(let p in this.props.products){
@@ -176,7 +176,7 @@ export default class SendToAddress extends React.Component {
             <Text fontSize={5} fontWeight="bold">{currencyDisplay(this.state.fromBalance)}</Text>
           </Flex>
 
-          <Field mb={3} label={i18n.t('withdraw_from_private.from_address')}>
+          <Field mb={3} label={t('withdraw_from_private.from_address')}>
             <Input
               width={1}
               type="text"
@@ -186,7 +186,7 @@ export default class SendToAddress extends React.Component {
             />
           </Field>
 
-          <Field mb={3} label={i18n.t('withdraw_from_private.amount')}>
+          <Field mb={3} label={t('withdraw_from_private.amount')}>
             <Input
               width={1}
               type="number"
@@ -202,9 +202,11 @@ export default class SendToAddress extends React.Component {
           width={1}
           disabled={!canWithdraw}
           onClick={this.withdraw}>
-          {i18n.t('withdraw_from_private.withdraw')}
+          {t('withdraw_from_private.withdraw')}
         </PrimaryButton>
       </div>
     )
   }
 }
+
+export default withTranslation()(WithdrawFromPrivate);
