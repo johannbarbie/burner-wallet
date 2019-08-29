@@ -997,10 +997,7 @@ class Exchange extends React.Component {
 
           <PrimaryButton width={1}
             icon={'ArrowDownward'}
-            disabled={
-              buttonsDisabled ||
-              parseFloat(this.props.xdaiBalance) === 0
-            }
+            disabled={true}
             onClick={()=>{
             this.setState({daiToXdaiMode:"withdraw"})
           }} >
