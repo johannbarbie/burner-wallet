@@ -20,6 +20,7 @@ import getConfig from "../config";
 import { PrimaryButton, BorderButton } from "./Buttons";
 import bityLogo from '../assets/bity.png';
 import { price } from "../services/ethgasstation";
+import { getBestDeal } from "../services/marketMaker";
 import { getStoredValue } from "../services/localStorage";
 
 const CONFIG = getConfig();
@@ -82,6 +83,11 @@ class Exchange extends React.Component {
       maxWithdrawlAmount: 0.00,
       withdrawalExplanation: props.t('exchange.withdrawal_explanation'),
       gettingGas:false,
+      deals: {
+        message: "",
+        deal: null,
+        loaded: false,
+      }
     }
 
     setInterval(() => this.updatePendingExits(daiAddress, xdaiweb3), 5000);
@@ -122,6 +128,26 @@ class Exchange extends React.Component {
     this.interval = setInterval(this.poll.bind(this),1500)
     setTimeout(this.poll.bind(this),250)
   }
+
+  async getBestDeal() {
+    const { xdaiweb3 } = this.props;
+    // Get best deal from market makers
+    const color = await xdaiweb3.getColor(CONFIG.ROOTCHAIN.DAI_ADDRESS);
+    const daiAddr = CONFIG.ROOTCHAIN.DAI_ADDRESS;
+    let deal, message;
+    try {
+      deal = await getBestDeal(daiAddr, color);
+    } catch(err) {
+      message = err.toString();
+    }
+
+    if (message) {
+      this.setState(Object.assign(this.state.deals, {message, loaded: true}));
+    } else if (deal) {
+      this.setState(Object.assign(this.state.deals, {deal, loaded: true}));
+    }
+  }
+
   async poll(){
 	let { xdaiweb3 } = this.state
 	let { t } = this.props
@@ -133,7 +159,7 @@ class Exchange extends React.Component {
         this.setState({daiBalance})
       }
     }*/
-
+    await this.getBestDeal();
 
     if(this.state.gettingGas){
       if(this.state.ethBalanceShouldBe){
@@ -985,6 +1011,8 @@ class Exchange extends React.Component {
         )
       }
     } else {
+      const { deals: { loaded, deal } } = this.state;
+
       daiToXdaiDisplay = (
         <Flex width={1} px={3}>
           <PrimaryButton width={1} mr={2} icon={'ArrowUpward'} disabled={buttonsDisabled} onClick={()=>{
@@ -997,12 +1025,12 @@ class Exchange extends React.Component {
 
           <PrimaryButton width={1}
             icon={'ArrowDownward'}
-            disabled={true}
+            disabled={!loaded || !deal}
             onClick={()=>{
             this.setState({daiToXdaiMode:"withdraw"})
           }} >
             <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-              PDAI to DAI
+              {!loaded ? "Loading exit deals..." : deal ? "PDAI to DAI" : "Exits unavailable..."}
             </Scaler>
           </PrimaryButton>
         </Flex>
