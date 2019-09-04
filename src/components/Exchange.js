@@ -911,10 +911,11 @@ class Exchange extends React.Component {
 
       daiToXdaiDisplay = (
         <div>
-          <Flex mb={3} mt={2} alignItems="center" justifyContent="center" width={1}>
-              {/* NOTE: Slider unfortunately doesn't accept the width prop */}
+          <Flex pl={3} mb={3} mt={2} alignItems="center" justifyContent="center" width={1}>
+              {/* NOTE: Slider unfortunately doesn't accept the width prop.
+                  The responsiveness of this slider is hence shit :( */}
 					    <Slider
-                style={{width: "50%"}}
+                style={{width: "60%"}}
                 min="1"
                 defaultValue={daiToXdaiAmount}
                 max={Math.floor(convertCurrency(deal.maxExit, `${displayCurrency}/USD`))}
