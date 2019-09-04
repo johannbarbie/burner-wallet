@@ -28,6 +28,19 @@ every issue that has a "bounty" label attached , you can earn DAI by doing the
 work and subsequently requesting payouts in LeapDAO's Slack. To start working,
 please sign up under http://join.leapdao.org.
 
+### Adding a Market Maker
+
+To exit LeapDAO's Plasma, marker makers are used. They buy a user's regular
+Plasma exit (which usually takes 7 days to complete) and send the user the
+respective currency on the main chain. This allows a user to exit a Plasma chain
+within minutes!
+
+To boost the liquidity of exiting LeapDAO's Plasma main network, we'd be more
+than happy to add you as one of our market makers. To set one up:
+
+1. Setup a [exit-marker-maker](https://github.com/leapdao/exit-market-maker)
+1. Add yourself as a market maker to the config.js file.
+
 ## Why fork upstream?
 
 [We believe that Plasma is superior to POA networks.](https://medium.com/@timdaub/why-you-shouldnt-ship-to-a-poa-network-7e2b5aa83aa9)
