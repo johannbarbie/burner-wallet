@@ -90,17 +90,17 @@ class Exchange extends React.Component {
       }
     }
 
-    setInterval(() => this.updatePendingExits(daiAddress, xdaiweb3), 5000);
   }
 
   updatePendingExits(daiAddress, xdaiweb3) {
+    const { deals } = this.state;
     const account = daiAddress;
     const tokenAddr = this.props.daiContract._address;
 
     xdaiweb3.getColor(tokenAddr)
     .then(color => {
       return fetch(
-      `${CONFIG.SIDECHAIN.MARKET_MAKER}/exits/${account}/${color}`,
+      `${deals.deal.meta.url}/exits/${account}/${color}`,
       { method: "GET", mode: "cors" }
       );
     })
@@ -114,7 +114,9 @@ class Exchange extends React.Component {
           pendingMsg
         });
       }
-    });
+    })
+    // NOTE: Without this, the app can crash as rsp may not be reducable.
+    .catch(console.log);
   };
 
 
@@ -133,9 +135,15 @@ class Exchange extends React.Component {
   // NOTE: This lifecycle method is considered legacy in new react versions:
   // https://reactjs.org/docs/react-component.html#unsafe_componentwillreceiveprops
   componentWillReceiveProps(nextProps) {
+    const { convertCurrency, address } = this.props;
     const { daiToXdaiAmount } = this.state;
+    const displayCurrency = getStoredValue("currency", address);
+
     if (typeof nextProps.xdaiBalance !== "undefined" && typeof daiToXdaiAmount === "undefined") {
-      this.setState({daiToXdaiAmount: nextProps.xdaiBalance >= 1 ? 1 : 0});
+      const minAmount = convertCurrency(1, `USD/${displayCurrency}`);
+      this.setState({
+        daiToXdaiAmount: nextProps.xdaiBalance >= minAmount ? minAmount : 0
+      });
     }
   }
 
@@ -166,7 +174,7 @@ class Exchange extends React.Component {
   }
 
   async poll(){
-	let { xdaiweb3 } = this.state
+	let { xdaiweb3, deals, daiAddress } = this.state
 	let { t } = this.props
     /*let { daiContract } = this.props
     if(daiContract){
@@ -186,7 +194,9 @@ class Exchange extends React.Component {
         }
       }
     }
-    this.updatePendingExits(this.state.daiAddress, xdaiweb3)
+    if (deals.loaded) {
+      this.updatePendingExits(daiAddress, xdaiweb3)
+    }
 
     /*
     console.log("SETTING ETH BALANCE OF "+this.state.daiAddress)
@@ -906,7 +916,7 @@ class Exchange extends React.Component {
 					    <Slider
                 style={{width: "50%"}}
                 min="1"
-                defaultValue={1}
+                defaultValue={daiToXdaiAmount}
                 max={Math.floor(convertCurrency(deal.maxExit, `${displayCurrency}/USD`))}
                 step="1"
                 onChange={e => this.setState({daiToXdaiAmount: convertCurrency(e.target.value, `USD/${displayCurrency}`)})}
@@ -931,7 +941,7 @@ class Exchange extends React.Component {
               disabled={buttonsDisabled || parseFloat(xdaiBalance) < 1}
               onClick={async ()=>{
                 const { convertCurrency } = this.props;
-                let { daiToXdaiAmount } = this.state;
+                let { daiToXdaiAmount, deals } = this.state;
 
                 // First we convert from the current display value and
                 const displayCurrency = getStoredValue("currency", address);
@@ -977,7 +987,7 @@ class Exchange extends React.Component {
                     color,
                     this.state.xdaiweb3,
                     this.props.web3,
-                    `${CONFIG.SIDECHAIN.MARKET_MAKER}/sellExit`,
+                    `${deals.deal.meta.url}/sellExit`,
                     signer,
                   ).then(rsp => {
                     console.log(rsp);
@@ -1013,7 +1023,7 @@ class Exchange extends React.Component {
                         color,
                         this.state.xdaiweb3,
                         this.props.web3,
-                        `${CONFIG.SIDECHAIN.MARKET_MAKER}/sellExit`
+                        `${deals.deal.meta.url}/sellExit`
                       )
                     ).then(rsp => {
                       console.log(rsp);
