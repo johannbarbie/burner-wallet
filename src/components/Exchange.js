@@ -10,7 +10,8 @@ import {
   Box,
   OutlineButton,
   Input as RInput,
-  Field
+  Field,
+  Slider
 } from 'rimble-ui'
 
 import { Exit } from 'leap-core';
@@ -62,7 +63,6 @@ class Exchange extends React.Component {
       daiAddress = this.props.address
       xdaiAddress = this.props.address
     }
-
 
     this.state = {
       daiAddress: daiAddress,
@@ -123,15 +123,24 @@ class Exchange extends React.Component {
       this.setState({ canSendDai: this.canSendDai(), canSendEth: this.canSendEth(), canSendXdai: this.canSendXdai() })
     });
   };
+
   async componentDidMount(){
     this.setState({ canSendDai: this.canSendDai(), canSendEth: this.canSendEth(), canSendXdai: this.canSendXdai() })
     this.interval = setInterval(this.poll.bind(this),1500)
     setTimeout(this.poll.bind(this),250)
   }
 
+  // NOTE: This lifecycle method is considered legacy in new react versions:
+  // https://reactjs.org/docs/react-component.html#unsafe_componentwillreceiveprops
+  componentWillReceiveProps(nextProps) {
+    const { daiToXdaiAmount } = this.state;
+    if (typeof nextProps.xdaiBalance !== "undefined" && typeof daiToXdaiAmount === "undefined") {
+      this.setState({daiToXdaiAmount: nextProps.xdaiBalance >= 1 ? 1 : 0});
+    }
+  }
+
   async getBestDeal() {
     const { xdaiweb3 } = this.props;
-    // Get best deal from market makers
     const color = await xdaiweb3.getColor(CONFIG.ROOTCHAIN.DAI_ADDRESS);
     const daiAddr = CONFIG.ROOTCHAIN.DAI_ADDRESS;
     let deal, message;
@@ -144,7 +153,15 @@ class Exchange extends React.Component {
     if (message) {
       this.setState(Object.assign(this.state.deals, {message, loaded: true}));
     } else if (deal) {
-      this.setState(Object.assign(this.state.deals, {deal, loaded: true}));
+      let { xdaiBalance } = this.props;
+      const { deals } = this.state;
+      xdaiBalance = xdaiweb3.utils.toWei(xdaiBalance, "ether");
+      deal.deal.maxExitWei = xdaiBalance > deal.balance ? deal.balance : xdaiBalance;
+      deal.deal.maxExit = xdaiweb3.utils.fromWei(deal.deal.maxExitWei, "ether");
+
+      this.setState({
+        deals: Object.assign({deals}, {deal, loaded: true}),
+      });
     }
   }
 
@@ -873,36 +890,46 @@ class Exchange extends React.Component {
         )
       }
     } else if(daiToXdaiMode==="withdraw"){
-      console.log("CHECKING META ACCOUNT ",this.state.xdaiMetaAccount,this.props.network)
-      if(!this.state.xdaiMetaAccount && this.props.network!=="LeapTestnet"){
-        daiToXdaiDisplay = (
-          <div className="content ops row" style={{textAlign:'center'}}>
-            <div className="col-12 p-1">
-              Error: MetaMask network must be: <span style={{fontWeight:"bold",marginLeft:5}}>dai.poa.network</span>
-              <a href="#" onClick={()=>{this.setState({daiToXdaiMode:false})}} style={{marginLeft:40,color:"#666666"}}>
-                <i className="fas fa-times"/> dismiss
-              </a>
-            </div>
-          </div>
-        )
-      }else{
-        // TODO: Isn't this exactly the wrong name?
-        daiToXdaiDisplay = (
-          <div className="content ops row transfer-row">
-            <div className="input-with-arrow">
-              <i className="fas fa-arrow-down"  />
-              <div className="input-group">
-                <RInput
-                  width={1}
-                  type="number"
-                  step="0.1"
-                  placeholder={this.props.currencyDisplay(0)}
-                  value={this.state.daiToXdaiAmount}
-                  onChange={event => this.updateState('daiToXdaiAmount', event.target.value)} />
-              </div>
-            </div>
-            {daiCancelButton}
-            <PrimaryButton className={"btn-send"} disabled={buttonsDisabled} onClick={async ()=>{
+      const {
+        currencyDisplay,
+        convertCurrency,
+        address,
+        xdaiBalance
+      } = this.props;
+      const { daiToXdaiAmount, deals: { deal: { deal } } } = this.state;
+      const displayCurrency = getStoredValue("currency", address);
+
+      daiToXdaiDisplay = (
+        <div>
+          <Flex mb={3} mt={2} alignItems="center" justifyContent="center" width={1}>
+              {/* NOTE: Slider unfortunately doesn't accept the width prop */}
+					    <Slider
+                style={{width: "50%"}}
+                min="1"
+                defaultValue={1}
+                max={Math.floor(convertCurrency(deal.maxExit, `${displayCurrency}/USD`))}
+                step="1"
+                onChange={e => this.setState({daiToXdaiAmount: convertCurrency(e.target.value, `USD/${displayCurrency}`)})}
+              />
+            <Box mx={2}>
+              {/* NOTE: currencyDisplay only takes string values */}
+              {currencyDisplay(daiToXdaiAmount)}
+            </Box>
+          </Flex>
+          <Flex alignItems="center" justifyContent="center" width={1}>
+            {/* NOTE: This is not the same button as daiCancelButton. It has
+                a margin :D */}
+            <BorderButton width={0.5} ml={3} mr={2} className="btn-cancel" onClick={()=>{
+              this.setState({daiToXdaiAmount:"",daiToXdaiMode:false})
+            }}>
+              <i className="fas fa-times"/> {t('cancel')}
+            </BorderButton>
+            <PrimaryButton
+              width={0.5}
+              mr={3}
+              className={"btn-send"}
+              disabled={buttonsDisabled || parseFloat(xdaiBalance) < 1}
+              onClick={async ()=>{
                 const { convertCurrency } = this.props;
                 let { daiToXdaiAmount } = this.state;
 
@@ -941,7 +968,7 @@ class Exchange extends React.Component {
                     }
                   };
 
-                  const tokenAddr = this.props.pdaiContract._address;
+                  const tokenAddr = this.props.xdaiContract._address;
                   const color = await this.state.xdaiweb3.getColor(tokenAddr);
 
                   Exit.fastSellAmount(
@@ -1007,9 +1034,9 @@ class Exchange extends React.Component {
               }>
               <i className="fas fa-arrow-down" /> Send
             </PrimaryButton>
-          </div>
-        )
-      }
+          </Flex>
+        </div>
+      )
     } else {
       const { deals: { loaded, deal } } = this.state;
 
