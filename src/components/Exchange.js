@@ -924,6 +924,9 @@ class Exchange extends React.Component {
             <Box mx={2}>
               {/* NOTE: currencyDisplay only takes string values */}
               {currencyDisplay(daiToXdaiAmount)}
+              <span style={{fontWeight: "normal", whiteSpace: "nowrap"}}>
+                {` (Fee: ${currencyDisplay(daiToXdaiAmount*(1-deal.rate/1000))})`}
+              </span>
             </Box>
           </Flex>
           <Flex alignItems="center" justifyContent="center" width={1}>
