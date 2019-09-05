@@ -10,7 +10,8 @@ import {
   Box,
   OutlineButton,
   Input as RInput,
-  Field
+  Field,
+  Slider
 } from 'rimble-ui'
 
 import { Exit } from 'leap-core';
@@ -20,6 +21,7 @@ import getConfig from "../config";
 import { PrimaryButton, BorderButton } from "./Buttons";
 import bityLogo from '../assets/bity.png';
 import { price } from "../services/ethgasstation";
+import { getBestDeal } from "../services/marketMaker";
 import { getStoredValue } from "../services/localStorage";
 
 const CONFIG = getConfig();
@@ -62,7 +64,6 @@ class Exchange extends React.Component {
       xdaiAddress = this.props.address
     }
 
-
     this.state = {
       daiAddress: daiAddress,
       xdaiAddress: xdaiAddress,
@@ -82,19 +83,24 @@ class Exchange extends React.Component {
       maxWithdrawlAmount: 0.00,
       withdrawalExplanation: props.t('exchange.withdrawal_explanation'),
       gettingGas:false,
+      deals: {
+        message: "",
+        deal: null,
+        loaded: false,
+      }
     }
 
-    setInterval(() => this.updatePendingExits(daiAddress, xdaiweb3), 5000);
   }
 
   updatePendingExits(daiAddress, xdaiweb3) {
+    const { deals } = this.state;
     const account = daiAddress;
     const tokenAddr = this.props.daiContract._address;
 
     xdaiweb3.getColor(tokenAddr)
     .then(color => {
       return fetch(
-      `${CONFIG.SIDECHAIN.MARKET_MAKER}/exits/${account}/${color}`,
+      `${deals.deal.meta.url}/exits/${account}/${color}`,
       { method: "GET", mode: "cors" }
       );
     })
@@ -108,7 +114,9 @@ class Exchange extends React.Component {
           pendingMsg
         });
       }
-    });
+    })
+    // NOTE: Without this, the app can crash as rsp may not be reducable.
+    .catch(console.log);
   };
 
 
@@ -117,13 +125,56 @@ class Exchange extends React.Component {
       this.setState({ canSendDai: this.canSendDai(), canSendEth: this.canSendEth(), canSendXdai: this.canSendXdai() })
     });
   };
+
   async componentDidMount(){
     this.setState({ canSendDai: this.canSendDai(), canSendEth: this.canSendEth(), canSendXdai: this.canSendXdai() })
     this.interval = setInterval(this.poll.bind(this),1500)
     setTimeout(this.poll.bind(this),250)
   }
+
+  // NOTE: This lifecycle method is considered legacy in new react versions:
+  // https://reactjs.org/docs/react-component.html#unsafe_componentwillreceiveprops
+  componentWillReceiveProps(nextProps) {
+    const { convertCurrency, address } = this.props;
+    const { daiToXdaiAmount } = this.state;
+    const displayCurrency = getStoredValue("currency", address);
+
+    if (typeof nextProps.xdaiBalance !== "undefined" && typeof daiToXdaiAmount === "undefined") {
+      const minAmount = convertCurrency(1, `USD/${displayCurrency}`);
+      this.setState({
+        daiToXdaiAmount: nextProps.xdaiBalance >= minAmount ? minAmount : 0
+      });
+    }
+  }
+
+  async getBestDeal() {
+    const { xdaiweb3 } = this.props;
+    const color = await xdaiweb3.getColor(CONFIG.ROOTCHAIN.DAI_ADDRESS);
+    const daiAddr = CONFIG.ROOTCHAIN.DAI_ADDRESS;
+    let deal, message;
+    try {
+      deal = await getBestDeal(daiAddr, color);
+    } catch(err) {
+      message = err.toString();
+    }
+
+    if (message) {
+      this.setState(Object.assign(this.state.deals, {message, loaded: true}));
+    } else if (deal) {
+      let { xdaiBalance } = this.props;
+      const { deals } = this.state;
+      xdaiBalance = xdaiweb3.utils.toWei(xdaiBalance, "ether");
+      deal.deal.maxExitWei = xdaiBalance > deal.balance ? deal.balance : xdaiBalance;
+      deal.deal.maxExit = xdaiweb3.utils.fromWei(deal.deal.maxExitWei, "ether");
+
+      this.setState({
+        deals: Object.assign({deals}, {deal, loaded: true}),
+      });
+    }
+  }
+
   async poll(){
-	let { xdaiweb3 } = this.state
+	let { xdaiweb3, deals, daiAddress } = this.state
 	let { t } = this.props
     /*let { daiContract } = this.props
     if(daiContract){
@@ -133,7 +184,7 @@ class Exchange extends React.Component {
         this.setState({daiBalance})
       }
     }*/
-
+    await this.getBestDeal();
 
     if(this.state.gettingGas){
       if(this.state.ethBalanceShouldBe){
@@ -143,7 +194,9 @@ class Exchange extends React.Component {
         }
       }
     }
-    this.updatePendingExits(this.state.daiAddress, xdaiweb3)
+    if (deals.loaded) {
+      this.updatePendingExits(daiAddress, xdaiweb3)
+    }
 
     /*
     console.log("SETTING ETH BALANCE OF "+this.state.daiAddress)
@@ -847,38 +900,52 @@ class Exchange extends React.Component {
         )
       }
     } else if(daiToXdaiMode==="withdraw"){
-      console.log("CHECKING META ACCOUNT ",this.state.xdaiMetaAccount,this.props.network)
-      if(!this.state.xdaiMetaAccount && this.props.network!=="LeapTestnet"){
-        daiToXdaiDisplay = (
-          <div className="content ops row" style={{textAlign:'center'}}>
-            <div className="col-12 p-1">
-              Error: MetaMask network must be: <span style={{fontWeight:"bold",marginLeft:5}}>dai.poa.network</span>
-              <a href="#" onClick={()=>{this.setState({daiToXdaiMode:false})}} style={{marginLeft:40,color:"#666666"}}>
-                <i className="fas fa-times"/> dismiss
-              </a>
-            </div>
-          </div>
-        )
-      }else{
-        // TODO: Isn't this exactly the wrong name?
-        daiToXdaiDisplay = (
-          <div className="content ops row transfer-row">
-            <div className="input-with-arrow">
-              <i className="fas fa-arrow-down"  />
-              <div className="input-group">
-                <RInput
-                  width={1}
-                  type="number"
-                  step="0.1"
-                  placeholder={this.props.currencyDisplay(0)}
-                  value={this.state.daiToXdaiAmount}
-                  onChange={event => this.updateState('daiToXdaiAmount', event.target.value)} />
-              </div>
-            </div>
-            {daiCancelButton}
-            <PrimaryButton className={"btn-send"} disabled={buttonsDisabled} onClick={async ()=>{
+      const {
+        currencyDisplay,
+        convertCurrency,
+        address,
+        xdaiBalance
+      } = this.props;
+      const { daiToXdaiAmount, deals: { deal: { deal } } } = this.state;
+      const displayCurrency = getStoredValue("currency", address);
+
+      daiToXdaiDisplay = (
+        <div>
+          <Flex pl={3} mb={3} mt={2} alignItems="center" justifyContent="center" width={1}>
+              {/* NOTE: Slider unfortunately doesn't accept the width prop.
+                  The responsiveness of this slider is hence shit :( */}
+					    <Slider
+                style={{width: "60%"}}
+                min="1"
+                defaultValue={daiToXdaiAmount}
+                max={Math.floor(convertCurrency(deal.maxExit, `${displayCurrency}/USD`))}
+                step="1"
+                onChange={e => this.setState({daiToXdaiAmount: convertCurrency(e.target.value, `USD/${displayCurrency}`)})}
+              />
+            <Box mx={2}>
+              {/* NOTE: currencyDisplay only takes string values */}
+              {currencyDisplay(daiToXdaiAmount)}
+              <span style={{fontWeight: "normal", whiteSpace: "nowrap"}}>
+                {` (Fee: ${currencyDisplay(daiToXdaiAmount*(1-deal.rate/1000))})`}
+              </span>
+            </Box>
+          </Flex>
+          <Flex alignItems="center" justifyContent="center" width={1}>
+            {/* NOTE: This is not the same button as daiCancelButton. It has
+                a margin :D */}
+            <BorderButton width={0.5} ml={3} mr={2} className="btn-cancel" onClick={()=>{
+              this.setState({daiToXdaiAmount:"",daiToXdaiMode:false})
+            }}>
+              <i className="fas fa-times"/> {t('cancel')}
+            </BorderButton>
+            <PrimaryButton
+              width={0.5}
+              mr={3}
+              className={"btn-send"}
+              disabled={buttonsDisabled || parseFloat(xdaiBalance) < 1}
+              onClick={async ()=>{
                 const { convertCurrency } = this.props;
-                let { daiToXdaiAmount } = this.state;
+                let { daiToXdaiAmount, deals } = this.state;
 
                 // First we convert from the current display value and
                 const displayCurrency = getStoredValue("currency", address);
@@ -915,7 +982,7 @@ class Exchange extends React.Component {
                     }
                   };
 
-                  const tokenAddr = this.props.pdaiContract._address;
+                  const tokenAddr = this.props.xdaiContract._address;
                   const color = await this.state.xdaiweb3.getColor(tokenAddr);
 
                   Exit.fastSellAmount(
@@ -924,7 +991,7 @@ class Exchange extends React.Component {
                     color,
                     this.state.xdaiweb3,
                     this.props.web3,
-                    `${CONFIG.SIDECHAIN.MARKET_MAKER}/sellExit`,
+                    `${deals.deal.meta.url}/sellExit`,
                     signer,
                   ).then(rsp => {
                     console.log(rsp);
@@ -960,7 +1027,7 @@ class Exchange extends React.Component {
                         color,
                         this.state.xdaiweb3,
                         this.props.web3,
-                        `${CONFIG.SIDECHAIN.MARKET_MAKER}/sellExit`
+                        `${deals.deal.meta.url}/sellExit`
                       )
                     ).then(rsp => {
                       console.log(rsp);
@@ -981,10 +1048,12 @@ class Exchange extends React.Component {
               }>
               <i className="fas fa-arrow-down" /> Send
             </PrimaryButton>
-          </div>
-        )
-      }
+          </Flex>
+        </div>
+      )
     } else {
+      const { deals: { loaded, deal } } = this.state;
+
       daiToXdaiDisplay = (
         <Flex width={1} px={3}>
           <PrimaryButton width={1} mr={2} icon={'ArrowUpward'} disabled={buttonsDisabled} onClick={()=>{
@@ -997,12 +1066,12 @@ class Exchange extends React.Component {
 
           <PrimaryButton width={1}
             icon={'ArrowDownward'}
-            disabled={true}
+            disabled={!loaded || !deal}
             onClick={()=>{
             this.setState({daiToXdaiMode:"withdraw"})
           }} >
             <Scaler config={{startZoomAt:400,origin:"50% 50%"}}>
-              PDAI to DAI
+              {!loaded ? "Loading exit deals..." : deal ? "PDAI to DAI" : "Exits unavailable..."}
             </Scaler>
           </PrimaryButton>
         </Flex>

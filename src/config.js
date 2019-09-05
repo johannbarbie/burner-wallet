@@ -13,8 +13,10 @@ const configs = [
       NAME: "Leap Testnet",
       RPC: "https://testnet-node.leapdao.org",
       DAI_ADDRESS: "0xD2D0F8a6ADfF16C2098101087f9548465EC96C98",
-      MARKET_MAKER:
-        "https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet",
+      MARKET_MAKERS: [{
+        URL: "https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet",
+        NAME: "Kosta's Testnet Market Maker"
+      }],
       BRIDGE_ADDRESS: "0x26a937302cc6A0A7334B210de06136C8C61BA885",
       EXPLORER: {
         URL: "https://testnet.leapdao.org/explorer/",
@@ -58,8 +60,10 @@ const configs = [
       NAME: "Leap Testnet",
       RPC: "https://testnet-node.leapdao.org",
       DAI_ADDRESS: "0xD2D0F8a6ADfF16C2098101087f9548465EC96C98",
-      MARKET_MAKER:
-        "https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet",
+      MARKET_MAKERS: [{
+        URL: "https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet",
+        NAME: "Kosta's Testnet Market Maker"
+      }],
       BRIDGE_ADDRESS: "0x26a937302cc6A0A7334B210de06136C8C61BA885",
       EXPLORER: {
         URL: "https://testnet.leapdao.org/explorer/",
@@ -103,8 +107,10 @@ const configs = [
       NAME: "Leap Network",
       RPC: "wss://mainnet-node1.leapdao.org:1443",
       DAI_ADDRESS: "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359",
-      MARKET_MAKER:
-        "https://k238oyefqc.execute-api.eu-west-1.amazonaws.com/mainnet",
+      MARKET_MAKERS: [{
+        URL: "https://k238oyefqc.execute-api.eu-west-1.amazonaws.com/mainnet",
+        NAME: "Kosta's Mainnet Market Maker"
+      }],
       BRIDGE_ADDRESS: "0x495AeB6FD65D39AA49482a938b85f7A70b075750",
       EXPLORER: {
         URL: "https://mainnet.leapdao.org/explorer/",
