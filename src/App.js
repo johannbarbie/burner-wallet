@@ -302,6 +302,7 @@ class App extends Component {
     }
 
     interval = setInterval(this.poll, 2000);
+    setInterval(this.loadProposals, 60*60*5);
   }
 
   componentWillUnmount() {
