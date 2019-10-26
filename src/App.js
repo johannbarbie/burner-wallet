@@ -579,7 +579,7 @@ export default class App extends Component {
     const { web3, contracts, account } = this.state;
 
     try {
-        await this.fetchBadgesPlasma(49154);
+        await this.fetchBadgesPlasma(49156);
     } catch(err) {
       // NOTE: A changeAlert here confused some people. Especially when 
       // everything worked as expected but e.g. some ipfs links from Infura

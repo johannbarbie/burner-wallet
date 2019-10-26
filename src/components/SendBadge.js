@@ -97,7 +97,7 @@ export default class SendBadge extends React.Component {
       this.props.changeView('loader')
       setTimeout(()=>{window.scrollTo(0,0)},60)
 
-      const color = 49154;
+      const color = 49156;
       let receipt;
       try {
         receipt = await tokenSendV2(
